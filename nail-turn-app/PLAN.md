@@ -64,7 +64,7 @@
    - Danh sách khách đang chờ; mỗi khách hiện **thợ được gợi ý** của nhóm tương ứng.
    - Bấm **"Assign"** → hiện to *"Call: Linh — Pedicure"* để đọc qua bộ đàm.
    - Nút **Done** khi thợ làm xong; đổi trạng thái thợ (break/back).
-   - Khách làm nhiều nhóm (vd. chân + tay): **một thẻ khách hiện tiến độ từng phần** và thợ của từng phần *(P2)*.
+   - Khách làm nhiều nhóm (vd. chân + tay): **một thẻ khách hiện tiến độ từng phần** và thợ của từng phần; bấm "phần 1 xong" + nhập tiền → phần 2 tự vào đầu hàng nhóm kia và **tự nhắc gọi thợ** khi có người rảnh — thay cho phiếu giấy chờ ở quầy *(P2)*.
    - Mỗi thợ hiện **số khách request đang chờ** — trả lời khách ngay, không phải đếm tay *(P1)*.
    - Tra nhanh **SĐT thợ** (bấm gọi / gửi SMS từ máy).
    - Chống xung đột: nếu máy kia vừa gán thợ đó, máy này báo ngay và gợi ý người kế tiếp.
@@ -151,7 +151,7 @@ Vì luật turn đã khá rõ, **code phần lõi chạy song song với nghiên
 
 ## 11. Câu hỏi còn mở (trả lời khi quan sát tại tiệm)
 
-1. Khách làm dịch vụ ở 2 nhóm (tay + chân) thì tính turn thế nào? Có thợ làm song song không?
+1. Khách làm dịch vụ ở 2 nhóm (tay + chân): đã biết làm **lần lượt** (P2); còn cần xác nhận mỗi nhóm có tính 1 turn không.
 2. Có những nhóm nào cụ thể, mỗi nhóm bao nhiêu thợ?
 3. Thợ check-in buổi sáng bằng cách nào? Thợ về sớm / vào trễ thì xử lý turn ra sao?
 4. POS hiện tại bất cập cụ thể ở bước nào (đếm số chạm, thời gian mỗi lần gán)?

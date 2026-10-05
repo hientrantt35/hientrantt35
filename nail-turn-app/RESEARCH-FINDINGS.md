@@ -24,10 +24,25 @@
   - Làm xong phần 1, khách có bị "quên" ở hàng chờ của nhóm thứ 2 không, hay phải xếp lại từ đầu?
   - Thợ nào làm phần nào; mỗi nhóm có được tính 1 turn không.
   - Lúc nào lượt khách mới thật sự xong (để tính tiền/đóng ticket).
+- **Quy trình thực tế (đã xác nhận):** Làm **lần lượt**, không song song.
+  1. Thợ phần 1 làm xong → **mang phiếu giấy xuống quầy**, ghi tổng tiền dịch vụ phần 1.
+  2. Phiếu **nằm chờ ở quầy** cho tới khi có thợ nhóm 2 rảnh.
+  3. Có thợ rảnh → phiếu được **đưa tay** sang thợ phần 2.
+- **Điểm đau rút ra:**
+  - **Phiếu giấy là "nguồn sự thật" duy nhất** của lượt khách → dễ thất lạc, nhầm phiếu, khó biết phiếu đang ở đâu.
+  - **Không có gì báo** khi thợ nhóm 2 rảnh → lễ tân phải tự nhớ phiếu đang chờ; khách ngồi không giữa 2 phần.
+  - Thợ phần 1 phải rời chỗ đi xuống quầy chỉ để ghi tiền.
 - **Gợi ý cho thiết kế:**
+  - **Phiếu điện tử** cho mỗi lượt khách; phiếu giấy (nếu tiệm vẫn muốn) chỉ là bản phụ.
+  - Lễ tân bấm **"Phần 1 xong" + nhập tiền phần 1** (1 màn hình, vài chạm) → phần 2 **tự vào đầu hàng chờ nhóm 2**.
+  - Khi có thợ nhóm 2 rảnh, màn hình lễ tân **tự nhắc**: *"Gọi Tuấn — khách Anna phần Tay (đã chờ 6 phút)"*.
+  - Có thể **gán trước** thợ phần 2 khi phần 1 sắp xong để thợ chuẩn bị, giảm thời gian khách ngồi chờ.
+  - Ghi tiền theo từng phần → báo cáo doanh thu/turn theo từng thợ chính xác.
+  - Chỉ số mới: **thời gian khách chờ giữa 2 phần**.
+- **Gợi ý cho thiết kế (cấu trúc):**
   - Một lượt khách (Visit) gồm **nhiều phần dịch vụ**; mỗi phần nằm trong hàng chờ của nhóm mình, có thợ riêng, trạng thái riêng (chờ → đang làm → xong).
   - Thẻ khách trên màn hình lễ tân hiện **cả 2 phần với tiến độ**, vd. *"Chân: Mai ✓ xong · Tay: đang chờ — tới lượt Tuấn"*.
   - Khi phần 1 xong, phần 2 **tự động được ưu tiên/giữ chỗ** trong hàng nhóm kia — không bắt khách xếp lại từ đầu (cần xác nhận luật tiệm).
   - Mỗi phần tính turn cho nhóm của nó (cần xác nhận).
 - **Ảnh hưởng tới kế hoạch:** Mô hình dữ liệu tách Visit → nhiều "service line"; thêm thẻ khách nhiều phần vào màn hình lễ tân.
-- **Cần hỏi thêm:** Cụ thể "khó theo dõi" ở bước nào? Tiệm làm 2 phần song song hay lần lượt? Mỗi nhóm tính 1 turn?
+- **Cần hỏi thêm:** Mỗi nhóm có tính 1 turn không? Thợ có mang phiếu xuống ngay hay để lễ tân tự đến lấy? Có khi nào phiếu bị thất lạc/nhầm chưa?
