@@ -59,11 +59,12 @@
 ## 4. Phạm vi MVP (cho hạn cuối học kỳ)
 
 **Có — 4 màn hình:**
-1. **Kiosk khách** (2 máy): nhập tên + SĐT → chọn dịch vụ → (tuỳ chọn) chọn thợ request → vào hàng chờ khách.
+1. **Kiosk khách** (2 máy): nhập tên + SĐT → chọn dịch vụ → (tuỳ chọn) chọn thợ request → vào hàng chờ khách. Khi chọn thợ, **hiện số người đang chờ thợ đó** cạnh lựa chọn "bất kỳ thợ nào" *(xem RESEARCH-FINDINGS P1)*.
 2. **Màn hình lễ tân** (2 máy, đồng bộ tức thì):
    - Danh sách khách đang chờ; mỗi khách hiện **thợ được gợi ý** của nhóm tương ứng.
    - Bấm **"Assign"** → hiện to *"Call: Linh — Pedicure"* để đọc qua bộ đàm.
    - Nút **Done** khi thợ làm xong; đổi trạng thái thợ (break/back).
+   - Mỗi thợ hiện **số khách request đang chờ** — trả lời khách ngay, không phải đếm tay *(P1)*.
    - Tra nhanh **SĐT thợ** (bấm gọi / gửi SMS từ máy).
    - Chống xung đột: nếu máy kia vừa gán thợ đó, máy này báo ngay và gợi ý người kế tiếp.
 3. **Monitor hàng chờ** ở quầy: mỗi nhóm một cột, thứ tự thợ, số turn, trạng thái — đọc rõ từ 2–3 mét.
