@@ -1,0 +1,691 @@
+<title>Turn Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: front-desk console. Header with live counts, customer list (left, primary), technician turn line (right). Touch-first, 48px targets. */
+:root {
+  --bg: #f6f4f7;
+  --surface: #ffffff;
+  --surface-2: #efecf2;
+  --line: #dcd7e1;
+  --fg: #1d1a22;
+  --muted: #6b6574;
+  --ink: #2a2235;
+  --ink-fg: #ffffff;
+  --hands: #6c3fb5;  --hands-soft: #efe7fb;
+  --feet: #12807e;   --feet-soft: #e0f3f2;
+  --wax: #b2541c;    --wax-soft: #fbeadf;
+  --ok: #1f7a3d;     --ok-soft: #e3f3e8;
+  --warn: #9a6400;   --warn-soft: #fbefd2;
+  --crit: #b3262e;   --crit-soft: #fbe3e4;
+  --shadow: 0 10px 30px rgba(29, 20, 40, .18);
+  --f-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --on-g: #ffffff;
+  --r: 12px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #16131a; --surface: #201c26; --surface-2: #2a2531; --line: #3a3443;
+  --fg: #f1edf5; --muted: #a59eb0; --ink: #efe9f7; --ink-fg: #1d1a22;
+  --hands: #b38cf0; --hands-soft: #2e2440;
+  --feet: #4cc4c0;  --feet-soft: #17312f;
+  --wax: #f0935a;   --wax-soft: #3a2518;
+  --ok: #6fd08f; --ok-soft: #1a3323; --warn: #f0c060; --warn-soft: #3a2f14; --crit: #ff8a8f; --crit-soft: #3d1c1f;
+  --shadow: 0 10px 30px rgba(0,0,0,.5);
+  --on-g: #16131a;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #16131a; --surface: #201c26; --surface-2: #2a2531; --line: #3a3443;
+  --fg: #f1edf5; --muted: #a59eb0; --ink: #efe9f7; --ink-fg: #1d1a22;
+  --hands: #b38cf0; --hands-soft: #2e2440;
+  --feet: #4cc4c0;  --feet-soft: #17312f;
+  --wax: #f0935a;   --wax-soft: #3a2518;
+  --ok: #6fd08f; --ok-soft: #1a3323; --warn: #f0c060; --warn-soft: #3a2f14; --crit: #ff8a8f; --crit-soft: #3d1c1f;
+  --shadow: 0 10px 30px rgba(0,0,0,.5);
+  --on-g: #16131a;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 15px; line-height: 1.4; padding-inline: 16px; padding-block: 12px 24px; box-sizing: border-box; }
+* { box-sizing: border-box; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--hands); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Header */
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding-block: 4px 14px; }
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand h1 { font-family: var(--f-display); font-weight: 700; font-size: 24px; margin: 0; letter-spacing: -.01em; }
+.brand .clock { color: var(--muted); font-weight: 600; }
+.tag { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px; }
+.counts { display: flex; gap: 8px; flex-wrap: wrap; }
+.count { display: flex; align-items: baseline; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); min-height: 40px; align-items: center; }
+.count b { font-family: var(--f-display); font-size: 20px; }
+.count span { color: var(--muted); font-size: 13px; }
+button.count:hover { border-color: var(--muted); }
+.top .grow { flex: 1 1 0; }
+.search { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 0 14px; min-height: 44px; flex: 1 1 220px; max-width: 340px; }
+.search input { border: 0; background: transparent; color: var(--fg); font: inherit; width: 100%; min-height: 42px; outline: none; }
+.btn { min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--ink); color: var(--ink-fg); border-color: var(--ink); }
+.btn.ghost { background: transparent; }
+.btn.small { min-height: 36px; padding: 0 12px; font-size: 14px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+
+/* Banner */
+.banner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; background: var(--warn-soft); border: 1px solid var(--warn); color: var(--fg); border-radius: var(--r); padding: 10px 14px; margin-bottom: 12px; }
+.banner p { margin: 0; flex: 1 1 280px; }
+
+/* Main grid */
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 16px; align-items: start; }
+@media (max-width: 980px) { .main { grid-template-columns: minmax(0, 1fr); } }
+.panel-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 6px 2px 8px; }
+.panel-h h2 { font-family: var(--f-display); font-size: 17px; font-weight: 700; margin: 0; }
+.panel-h .hint { color: var(--muted); font-size: 13px; }
+
+/* Customer cards */
+.list { display: grid; gap: 8px; }
+.section-label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; margin: 14px 2px 2px; display: flex; gap: 8px; align-items: center; }
+.section-label:first-child { margin-top: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; display: grid; gap: 6px; }
+.card.waiting { border-left: 4px solid var(--line); }
+.card.waiting.w-warn { border-left-color: var(--warn); }
+.card.waiting.w-crit { border-left-color: var(--crit); }
+.card-h { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.card-h .name { font-weight: 700; font-size: 16px; }
+.card-h .meta { color: var(--muted); font-size: 13px; }
+.pill { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.crit { background: var(--crit-soft); color: var(--crit); }
+.lines { display: grid; gap: 6px; }
+.line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 10px; background: var(--surface-2); }
+.line.locked { opacity: .65; }
+.line .what { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; }
+.chip { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+.g-hands { --g: var(--hands); --gs: var(--hands-soft); }
+.g-feet { --g: var(--feet); --gs: var(--feet-soft); }
+.g-wax { --g: var(--wax); --gs: var(--wax-soft); }
+.chip.g { background: var(--gs); color: var(--g); }
+.svc { font-weight: 600; }
+.req { font-size: 12px; font-weight: 700; color: var(--g); border: 1px dashed var(--g); border-radius: 999px; padding: 1px 8px; }
+.status { color: var(--muted); font-size: 13px; }
+.status strong { color: var(--fg); }
+.acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.btn.assign { background: var(--g); color: var(--on-g); border-color: var(--g); min-width: 132px; }
+.btn.done { border-color: var(--ok); color: var(--ok); background: var(--surface); min-width: 92px; }
+.empty { color: var(--muted); padding: 14px; text-align: center; border: 1px dashed var(--line); border-radius: var(--r); }
+
+/* Tech panel */
+.techs { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; position: sticky; top: env(safe-area-inset-top, 0px); }
+@media (max-width: 980px) { .techs { position: static; } }
+.nextup { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+.nextup button { border: 0; background: transparent; padding: 10px 8px; text-align: left; border-bottom: 3px solid transparent; min-height: 64px; min-width: 0; }
+.nextup button[aria-selected="true"] { background: var(--gs); border-bottom-color: var(--g); }
+.nextup .gname, .nextup .who, .nextup .sub, .trow .tn, .trow .ts { display: block; }
+.nextup .gname { font-size: 12px; font-weight: 700; color: var(--g); text-transform: uppercase; letter-spacing: .06em; }
+.nextup .who { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nextup .sub { font-size: 12px; color: var(--muted); }
+.tlist { max-height: calc(100vh - 220px); overflow-y: auto; }
+@media (max-width: 980px) { .tlist { max-height: none; } }
+.trow { width: 100%; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto 44px; gap: 8px; align-items: center; padding: 8px 12px; border: 0; border-bottom: 1px solid var(--line); background: transparent; text-align: left; min-height: 52px; }
+.trow:hover { background: var(--surface-2); }
+.trow .pos { color: var(--muted); font-weight: 700; text-align: center; }
+.trow .tn { font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.trow .ts { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trow .turns { font-family: var(--f-display); font-size: 22px; font-weight: 700; text-align: right; }
+.trow .turns small { display: block; font-family: var(--f-body); font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: -4px; }
+.trow.up { background: var(--gs); }
+.trow.up .pos { color: var(--g); }
+.st { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.st.available { background: var(--ok-soft); color: var(--ok); }
+.st.busy { background: var(--surface-2); color: var(--muted); }
+.st.break { background: var(--warn-soft); color: var(--warn); }
+.st.off { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+.rq { font-size: 11px; font-weight: 700; color: var(--g); }
+.tgroup-label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; padding: 10px 12px 4px; }
+.trow.offrow { opacity: .75; }
+
+/* Overlays */
+.scrim { position: fixed; inset: 0; background: rgba(15, 10, 20, .45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 20; }
+.sheet { background: var(--surface); color: var(--fg); border-radius: 16px; box-shadow: var(--shadow); width: min(520px, 100%); max-height: calc(100% - 32px); overflow-y: auto; padding: 18px; display: grid; gap: 14px; }
+.sheet h3 { font-family: var(--f-display); font-size: 22px; margin: 0; text-wrap: balance; }
+.sheet .sub { color: var(--muted); margin: -8px 0 0; }
+.sheet .row { display: flex; flex-wrap: wrap; gap: 8px; }
+.sheet .row .btn { flex: 1 1 140px; }
+.sheet label { font-weight: 600; font-size: 14px; display: grid; gap: 6px; }
+.sheet input[type="text"], .sheet input[type="tel"], .sheet select { min-height: 46px; border: 1px solid var(--line); border-radius: 10px; padding: 0 12px; background: var(--surface); color: var(--fg); font: inherit; width: 100%; }
+.sec { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; }
+.call { text-align: center; padding: 26px 18px; border-top: 8px solid var(--g); }
+.call .k { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: var(--g); }
+.call .big { font-family: var(--f-display); font-size: clamp(44px, 9vw, 72px); font-weight: 700; line-height: 1; margin: 6px 0 4px; }
+.call .detail { font-size: 18px; color: var(--muted); }
+.pin-dots { display: flex; gap: 14px; justify-content: center; }
+.pin-dots i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--muted); }
+.pin-dots i.on { background: var(--fg); border-color: var(--fg); }
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pad button { min-height: 60px; font-size: 22px; font-weight: 700; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-2); }
+.err { color: var(--crit); font-weight: 600; text-align: center; min-height: 20px; margin: 0; }
+.opt { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); text-align: left; min-height: 52px; width: 100%; }
+.opt[aria-pressed="true"] { border-color: var(--g, var(--ink)); background: var(--gs, var(--surface-2)); box-shadow: inset 0 0 0 1px var(--g, var(--ink)); }
+.gtoggle { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.gtoggle button { min-height: 64px; border-radius: 12px; border: 2px solid var(--line); background: var(--surface); font-weight: 700; padding: 6px; }
+.gtoggle button small { display: block; font-weight: 500; color: var(--muted); font-size: 11px; }
+.gtoggle button[aria-pressed="true"] { border-color: var(--g); background: var(--gs); color: var(--g); }
+.gblock { border: 1px solid var(--line); border-left: 4px solid var(--g); border-radius: 10px; padding: 10px; display: grid; gap: 8px; }
+.svcchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.svcchips button { min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 14px; }
+.svcchips button[aria-pressed="true"] { background: var(--g); color: var(--on-g); border-color: var(--g); }
+.stepper { display: flex; align-items: center; justify-content: center; gap: 18px; }
+.stepper b { font-family: var(--f-display); font-size: 48px; min-width: 70px; text-align: center; }
+.stepper button { width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-2); font-size: 26px; font-weight: 700; }
+.loglist, .donelist { display: grid; gap: 4px; max-height: 60vh; overflow-y: auto; }
+.logrow { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 8px; padding: 6px 2px; border-bottom: 1px solid var(--line); font-size: 14px; }
+.logrow time { color: var(--muted); }
+.phone { display: flex; gap: 8px; align-items: center; justify-content: space-between; background: var(--surface-2); border-radius: 10px; padding: 8px 12px; }
+.phone b { font-size: 18px; user-select: all; }
+.toast { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--ink-fg); padding: 10px 16px; border-radius: 999px; font-weight: 600; z-index: 30; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+.foot { color: var(--muted); font-size: 12px; margin-top: 16px; }
+@media (prefers-reduced-motion: no-preference) { .sheet { animation: pop .14s ease-out; } @keyframes pop { from { transform: scale(.97); opacity: .6; } } }
+</style>
+
+<header class="top">
+  <div class="brand"><h1>Turn Desk</h1><span class="clock num" id="clock"></span><span class="tag">Prototype · sample data</span></div>
+  <div class="counts" id="counts"></div>
+  <label class="search" for="q"><span aria-hidden="true">⌕</span><input id="q" type="search" placeholder="Search name, phone, or tech" autocomplete="off"></label>
+  <div class="grow"></div>
+  <button class="btn ghost" data-act="open-log">Activity</button>
+  <button class="btn" data-act="kiosk">Simulate kiosk check-in</button>
+  <button class="btn primary" data-act="open-add">+ Walk-in</button>
+</header>
+<div id="banner"></div>
+<main class="main">
+  <section aria-labelledby="cust-h">
+    <div class="panel-h"><h2 id="cust-h">Customers</h2><span class="hint">Oldest check-in first</span></div>
+    <div class="list" id="list"></div>
+  </section>
+  <aside aria-labelledby="tech-h">
+    <div class="panel-h"><h2 id="tech-h">Turn line</h2><span class="hint">Fewest turns first · tap a name</span></div>
+    <div class="techs" id="techs"></div>
+  </aside>
+</main>
+<p class="foot">Prototype for usability testing. Demo PIN for every technician: 1234. <button class="btn small ghost" data-act="reset">Reset demo</button></p>
+<div id="overlay"></div>
+<div id="toast"></div>
+
+<script>
+(() => {
+const MIN = 60000;
+const GROUPS = {
+  hands: { label: "Hands", services: ["Manicure", "Gel manicure", "Gel-X tips", "Acrylic full set", "Acrylic fill", "Dip powder", "Polish change"] },
+  feet:  { label: "Feet", services: ["Pedicure", "Gel pedicure", "Deluxe spa pedicure", "Callus treatment"] },
+  wax:   { label: "Wax & Lash", services: ["Eyebrow wax", "Lip wax", "Lash extensions", "Lash fill", "Brow tint"] }
+};
+const GKEYS = Object.keys(GROUPS);
+const TECH_NAMES = {
+  hands: ["Linh","Tuấn","Kelly","Tina","Vy","Ngọc","Jenny","Amy","Trâm","Kim","Lan","Thu","Hằng","Phương","Nhi","Tâm","Long","Danny","Tony","Hương","Diễm","My","Thảo","Yến","Trang"],
+  feet:  ["Mai","Hạnh","Loan","Quyên","Cindy","Lily","Vicky","Hoa","Bảo","Khoa","Nga","Oanh","Phúc","Quế","Sương","Tiên","Uyên","Vân","Xuân","Hiếu"],
+  wax:   ["Tú","Jade","Ruby","Kiều","Đào"]
+};
+const CUST = ["Anna K.","Brianna L.","Chloe M.","Danielle R.","Emily S.","Fatima A.","Grace W.","Hannah P.","Isabel G.","Jasmine T.","Karen O.","Lauren B.","Maria C.","Nicole D.","Olivia F.","Priya N.","Rachel H.","Sophia V.","Tiffany J.","Vanessa Q.","Whitney E.","Yasmin Z.","Zoe I.","Ashley U.","Brittany Y.","Carmen X.","Diana K.","Erica L.","Gabriela M.","Jessica R.","Kayla S.","Lucia A.","Megan W.","Natalie P.","Paige G.","Rosa T.","Sarah O.","Taylor B.","Valerie C.","Alyssa D."];
+
+let S, uid = 1;
+const nid = p => p + (uid++);
+const now = () => Date.now();
+const fmt = t => new Date(t).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+const mins = t => Math.max(0, Math.round((now() - t) / MIN));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const phone = () => "(718) 555-0" + String(100 + Math.floor(Math.random() * 900)).slice(0, 3);
+
+function seed() {
+  uid = 1;
+  const N = now();
+  const techs = [];
+  const onDutyCount = { hands: 20, feet: 16, wax: 4 };
+  GKEYS.forEach(g => TECH_NAMES[g].forEach((name, i) => {
+    const on = i < onDutyCount[g];
+    techs.push({ id: nid("t"), name, group: g, phone: phone(), pin: "1234",
+      checkinAt: on ? N - (300 - i * 6) * MIN : null, status: on ? "available" : "off",
+      turns: on ? 2 + ((i * 7) % 4) : 0, reqs: on ? (i % 3 === 0 ? 1 : 0) : 0, freeSince: N - (i % 9) * MIN });
+  }));
+  const T = n => techs.find(t => t.name === n);
+  const visits = [];
+  const usedNames = new Set();
+  const cname = () => { let n; do { n = pick(CUST); } while (usedNames.has(n) && usedNames.size < CUST.length); usedNames.add(n); return n; };
+  const mkVisit = (checkinAgo, lines) => {
+    const v = { id: nid("v"), name: cname(), phone: phone(), checkinAt: N - checkinAgo * MIN, lines: [], doneAt: null };
+    lines.forEach(l => v.lines.push(Object.assign({ id: nid("l"), service: pick(GROUPS[l.group].services), reqTech: null, status: "waiting", tech: null, startedAt: null, doneAt: null }, l)));
+    visits.push(v); return v;
+  };
+  const busy = (t, startedAgo) => { t.status = "busy"; return { tech: t.id, status: "in", startedAt: N - startedAgo * MIN }; };
+  // In service: hands 13, feet 11, wax 2
+  const inHands = techs.filter(t => t.group === "hands" && t.status === "available").slice(0, 13);
+  const inFeet = techs.filter(t => t.group === "feet" && t.status === "available").slice(0, 11);
+  const inWax = techs.filter(t => t.group === "wax" && t.status === "available").slice(0, 2);
+  inHands.forEach((t, i) => {
+    const ago = 6 + (i * 5) % 40;
+    if (i === 3 || i === 7) {
+      // Part 1 feet done, part 2 hands in service (P2)
+      const ft = inFeet[0] ? techs.find(x => x.group === "feet" && x.status === "available" && !inFeet.includes(x)) : null;
+      mkVisit(ago + 50, [
+        { group: "feet", status: "done", tech: ft ? ft.id : null, startedAt: N - (ago + 45) * MIN, doneAt: N - (ago + 4) * MIN },
+        Object.assign({ group: "hands" }, busy(t, ago))
+      ]);
+    } else {
+      mkVisit(ago + 3 + (i % 4), [Object.assign({ group: "hands" }, busy(t, ago), i === 0 ? { reqTech: t.id } : {})]);
+    }
+  });
+  inFeet.forEach((t, i) => {
+    const ago = 4 + (i * 7) % 38;
+    const lines = [Object.assign({ group: "feet" }, busy(t, ago))];
+    if (i < 3) lines.push({ group: "hands" }); // part 2 locked until feet done
+    mkVisit(ago + 2 + (i % 3), lines);
+  });
+  inWax.forEach((t, i) => mkVisit(5 + i * 9, [Object.assign({ group: "wax" }, busy(t, 3 + i * 7))]));
+  // Waiting
+  const linh = T("Linh"); // busy (first hands tech)
+  const freeFeet = techs.filter(t => t.group === "feet" && t.status === "available");
+  mkVisit(22, [{ group: "hands", reqTech: linh.id }]);
+  mkVisit(14, [{ group: "hands" }]);
+  mkVisit(9, [{ group: "feet" }]);
+  mkVisit(7, [{ group: "feet" }, { group: "hands" }]);
+  mkVisit(5, [{ group: "hands", reqTech: linh.id }]);
+  mkVisit(4, [{ group: "wax" }]);
+  mkVisit(3, [{ group: "feet", reqTech: freeFeet[2] ? freeFeet[2].id : null }]);
+  const between = mkVisit(48, [{ group: "feet", status: "done", tech: freeFeet[0].id, startedAt: N - 44 * MIN, doneAt: N - 3 * MIN }, { group: "hands" }]);
+  between.lines[0].service = "Deluxe spa pedicure"; between.lines[1].service = "Gel-X tips";
+  mkVisit(1, [{ group: "hands" }]);
+  const done = [];
+  for (let i = 0; i < 118; i++) done.push({ id: nid("d"), name: pick(CUST), at: N - (20 + i * 2) * MIN, groups: [pick(GKEYS)] });
+  return { techs, visits, done, log: [{ t: N - 300 * MIN, text: "Day started. Turn counts reset to 0." }], ui: { tab: "hands", q: "", modal: null, banner: null, call: null } };
+}
+
+function load() { try { const raw = localStorage.getItem("turn-desk-v1"); if (raw) { const s = JSON.parse(raw); uid = s._uid || 1000; return s; } } catch (e) {} return seed(); }
+function save() { try { S._uid = uid; localStorage.setItem("turn-desk-v1", JSON.stringify(S)); } catch (e) {} }
+
+const tech = id => S.techs.find(t => t.id === id);
+const lineOf = id => { for (const v of S.visits) for (const l of v.lines) if (l.id === id) return [v, l]; return [null, null]; };
+const activeVisits = () => S.visits.filter(v => !v.doneAt);
+const isLocked = (v, l) => l.status === "waiting" && v.lines.some(x => x !== l && x.status === "in");
+const byLine = (a, b) => a.turns - b.turns || a.checkinAt - b.checkinAt;
+function onDuty(g) { return S.techs.filter(t => t.group === g && t.status !== "off").sort(byLine); }
+function waitingReqFor(techId) {
+  const out = [];
+  activeVisits().slice().sort((a, b) => a.checkinAt - b.checkinAt).forEach(v => v.lines.forEach(l => { if (l.status === "waiting" && l.reqTech === techId) out.push([v, l]); }));
+  return out;
+}
+function waitedSince(v, l) {
+  const prev = v.lines.filter(x => x.status === "done" && x.doneAt).map(x => x.doneAt);
+  return prev.length ? Math.max(...prev) : v.checkinAt;
+}
+
+// Suggestions: requests first (M3), then fewest turns / earliest check-in, oldest customer first.
+function suggestions() {
+  const sug = new Map(), reserved = new Set(), visitHas = new Set();
+  const lines = [];
+  activeVisits().forEach(v => v.lines.forEach(l => { if (l.status === "waiting" && !isLocked(v, l)) lines.push([v, l]); }));
+  lines.sort((a, b) => waitedSince(...a) - waitedSince(...b));
+  for (const [v, l] of lines) {
+    if (!l.reqTech) continue;
+    const t = tech(l.reqTech);
+    if (t && t.status === "available" && !reserved.has(t.id)) { sug.set(l.id, t.id); reserved.add(t.id); visitHas.add(v.id); }
+  }
+  for (const [v, l] of lines) {
+    if (l.reqTech) continue;
+    const t = onDuty(l.group).find(t => t.status === "available" && !reserved.has(t.id) && !waitingReqFor(t.id).length);
+    if (t) { sug.set(l.id, t.id); reserved.add(t.id); visitHas.add(v.id); }
+  }
+  return sug;
+}
+
+function addLog(text) { S.log.unshift({ t: now(), text }); }
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.innerHTML = `<div class="toast" role="status">${esc(msg)}</div>`;
+  clearTimeout(toast._t); toast._t = setTimeout(() => { el.innerHTML = ""; }, 2600);
+}
+
+function assign(lineId, techId, how) {
+  const [v, l] = lineOf(lineId); const t = tech(techId);
+  if (!v || !t) return;
+  if (t.status !== "available") { toast(`${t.name} is no longer free. Pick the next technician.`); render(); return; }
+  if (isLocked(v, l)) { toast(`${v.name} is still in another service.`); return; }
+  const isReq = l.reqTech === t.id;
+  l.status = "in"; l.tech = t.id; l.startedAt = now();
+  t.status = "busy";
+  if (isReq) t.reqs++; else t.turns++;
+  addLog(`${t.name} → ${v.name} (${GROUPS[l.group].label}: ${l.service}). ${isReq ? "Request, no turn." : "+1 turn (now " + t.turns + ")."}${how === "override" ? " Picked manually by manager." : ""}`);
+  S.ui.call = { tech: t.name, group: l.group, customer: v.name, service: l.service, req: isReq };
+  save(); render();
+}
+function finish(lineId) {
+  const [v, l] = lineOf(lineId); const t = tech(l.tech);
+  l.status = "done"; l.doneAt = now();
+  if (t && t.status === "busy") { t.status = "available"; t.freeSince = now(); }
+  const left = v.lines.filter(x => x.status !== "done");
+  if (!left.length) {
+    v.doneAt = now();
+    S.done.unshift({ id: v.id, name: v.name, at: v.doneAt, groups: v.lines.map(x => x.group) });
+    addLog(`${t ? t.name : "Tech"} finished ${v.name}. Visit closed; ${v.name} goes to checkout.`);
+    toast(`${v.name} is done. ${t ? t.name + " is free." : ""}`);
+  } else {
+    addLog(`${t ? t.name : "Tech"} finished ${GROUPS[l.group].label} for ${v.name}. ${GROUPS[left[0].group].label} part moves to the front.`);
+    toast(`${t ? t.name + " is free. " : ""}${v.name} now waits for ${GROUPS[left[0].group].label}.`);
+  }
+  save(); render();
+}
+function techAction(t, action) {
+  if (action === "checkin") {
+    t.status = "available"; t.checkinAt = now(); t.freeSince = now();
+    addLog(`${t.name} checked in (${GROUPS[t.group].label}).`);
+    const others = onDuty(t.group).filter(x => x.id !== t.id);
+    const avg = others.length ? others.reduce((s, x) => s + x.turns, 0) / others.length : 0;
+    if (avg >= 2 && t.turns === 0) S.ui.banner = { techId: t.id, avg: Math.floor(avg) };
+  } else if (action === "break") { t.status = "break"; addLog(`${t.name} started a break. Turns kept at ${t.turns}.`); }
+  else if (action === "back") { t.status = "available"; t.freeSince = now(); addLog(`${t.name} is back from break.`); }
+  else if (action === "checkout") { t.status = "off"; addLog(`${t.name} checked out with ${t.turns} turns.`); }
+  toast(`${t.name}: ${{ checkin: "checked in", break: "on break", back: "back in line", checkout: "checked out" }[action]}`);
+  save(); render();
+}
+function adjust(t, to, reason) {
+  const from = t.turns; t.turns = to;
+  addLog(`Manager set ${t.name} from ${from} to ${to} turns. Reason: ${reason}.`);
+  if (S.ui.banner && S.ui.banner.techId === t.id) S.ui.banner = null;
+  toast(`${t.name} now has ${to} turns.`);
+  save(); render();
+}
+function addVisit(name, ph, picks, source) {
+  const v = { id: nid("v"), name, phone: ph, checkinAt: now(), lines: [], doneAt: null };
+  picks.forEach(p => v.lines.push({ id: nid("l"), group: p.group, service: p.service || GROUPS[p.group].services[0], reqTech: p.reqTech || null, status: "waiting", tech: null, startedAt: null, doneAt: null }));
+  S.visits.push(v);
+  addLog(`${name} checked in at the ${source}: ${v.lines.map(l => GROUPS[l.group].label + (l.reqTech ? " (requests " + tech(l.reqTech).name + ")" : "")).join(" + ")}.`);
+  toast(`${name} added to the waiting list.`);
+  save(); render();
+}
+
+// ---------- Render ----------
+function waitPill(m) {
+  const cls = m >= 20 ? "crit" : m >= 10 ? "warn" : "";
+  return `<span class="pill ${cls} num">waiting ${m} min</span>`;
+}
+function matchQ(v) {
+  const q = S.ui.q.trim().toLowerCase();
+  if (!q) return true;
+  if (v.name.toLowerCase().includes(q) || v.phone.replace(/\D/g, "").endsWith(q.replace(/\D/g, "") || "~")) return true;
+  return v.lines.some(l => [l.tech, l.reqTech].some(id => id && tech(id).name.toLowerCase().includes(q)));
+}
+function lineHTML(v, l, sug) {
+  const g = GROUPS[l.group];
+  const rq = l.reqTech ? `<span class="req">Requests ${esc(tech(l.reqTech).name)}</span>` : "";
+  let status = "", acts = "";
+  if (l.status === "done") {
+    status = `<span class="status">✓ Done by <strong>${esc(l.tech ? tech(l.tech).name : "—")}</strong></span>`;
+  } else if (l.status === "in") {
+    const t = tech(l.tech);
+    status = `<span class="status"><strong>${esc(t.name)}</strong> · <span class="num">${mins(l.startedAt)} min</span></span>`;
+    acts = `<button class="btn done" data-act="finish" data-line="${l.id}">Done</button>`;
+  } else if (isLocked(v, l)) {
+    const cur = v.lines.find(x => x.status === "in");
+    status = `<span class="status">After ${esc(GROUPS[cur.group].label.toLowerCase())} is done</span>`;
+  } else if (sug.has(l.id)) {
+    const t = tech(sug.get(l.id));
+    const multi = v.lines.filter(x => x.status === "waiting").length > 1;
+    status = `<span class="status">${l.reqTech ? "Requested tech is free" : "Up next · " + t.turns + " turns"}${multi ? " · start either part" : ""}</span>`;
+    acts = `<button class="btn assign" data-act="assign" data-line="${l.id}" data-tech="${t.id}">Assign ${esc(t.name)}</button>` +
+      (l.reqTech ? "" : `<button class="btn small" data-act="open-override" data-line="${l.id}" aria-label="Pick another technician">Other</button>`);
+  } else if (l.reqTech) {
+    const t = tech(l.reqTech);
+    const q = waitingReqFor(t.id); const pos = q.findIndex(([, x]) => x.id === l.id) + 1;
+    const state = t.status === "busy" ? "is busy" : t.status === "break" ? "is on break" : t.status === "off" ? "is not checked in" : "is taking an earlier request";
+    status = `<span class="status">${esc(t.name)} ${state} · <strong>#${pos}</strong> in ${esc(t.name)}'s requests</span>`;
+    acts = `<button class="btn small" data-act="to-anyone" data-line="${l.id}">Switch to anyone</button>`;
+  } else {
+    const free = onDuty(l.group).filter(t => t.status === "available").length;
+    status = `<span class="status">${free ? "Free techs are reserved for earlier customers" : "No " + esc(g.label.toLowerCase()) + " tech free yet"}</span>`;
+    acts = `<button class="btn small" data-act="open-override" data-line="${l.id}">Pick tech</button>`;
+  }
+  return `<div class="line g-${l.group} ${isLocked(v, l) ? "locked" : ""}">
+    <div class="what"><span class="chip g">${g.label}</span><span class="svc">${esc(l.service)}</span>${rq}${status}</div>
+    <div class="acts">${acts}</div></div>`;
+}
+function cardHTML(v, sug, waiting) {
+  const wl = v.lines.find(l => l.status === "waiting" && !isLocked(v, l));
+  const m = wl ? mins(waitedSince(v, wl)) : 0;
+  const between = v.lines.some(l => l.status === "done");
+  const cls = waiting ? (m >= 20 ? "w-crit" : m >= 10 ? "w-warn" : "") : "";
+  return `<article class="card ${waiting ? "waiting" : ""} ${cls}">
+    <div class="card-h"><span class="name">${esc(v.name)}</span><span class="meta num">in ${fmt(v.checkinAt)} · …${esc(v.phone.slice(-4))}</span>
+    ${waiting ? waitPill(m) : ""}${waiting && between ? `<span class="pill">part 2</span>` : ""}</div>
+    <div class="lines">${v.lines.map(l => lineHTML(v, l, sug)).join("")}</div></article>`;
+}
+function renderList(sug) {
+  const act = activeVisits().filter(matchQ).sort((a, b) => a.checkinAt - b.checkinAt);
+  const waiting = act.filter(v => !v.lines.some(l => l.status === "in"));
+  waiting.sort((a, b) => waitedSince(a, a.lines.find(l => l.status === "waiting")) - waitedSince(b, b.lines.find(l => l.status === "waiting")));
+  const inSvc = act.filter(v => v.lines.some(l => l.status === "in"));
+  let h = `<div class="section-label">Waiting <span class="num">${waiting.length}</span></div>`;
+  h += waiting.length ? waiting.map(v => cardHTML(v, sug, true)).join("") : `<div class="empty">No one is waiting${S.ui.q ? " for this search" : ""}.</div>`;
+  h += `<div class="section-label">In service <span class="num">${inSvc.length}</span></div>`;
+  h += inSvc.length ? inSvc.map(v => cardHTML(v, sug, false)).join("") : `<div class="empty">No one in service.</div>`;
+  document.getElementById("list").innerHTML = h;
+}
+function techStatus(t) {
+  if (t.status === "busy") {
+    const v = activeVisits().find(v => v.lines.some(l => l.tech === t.id && l.status === "in"));
+    const l = v && v.lines.find(l => l.tech === t.id && l.status === "in");
+    return `<span class="st busy">With ${esc(v ? v.name.split(" ")[0] : "client")} · ${l ? mins(l.startedAt) : 0}m</span>`;
+  }
+  return `<span class="st ${t.status}">${{ available: "Free", break: "Break", off: "Not in" }[t.status]}</span>`;
+}
+function renderTechs(sug) {
+  const tab = S.ui.tab;
+  const next = g => onDuty(g).find(t => t.status === "available" && !waitingReqFor(t.id).length);
+  let h = `<div class="nextup" role="tablist">` + GKEYS.map(g => {
+    const n = next(g); const on = onDuty(g);
+    return `<button class="g-${g}" role="tab" aria-selected="${g === tab}" data-act="tab" data-g="${g}">
+      <span class="gname">${GROUPS[g].label}</span><span class="who">${n ? "Next: " + esc(n.name) : "No one free"}</span>
+      <span class="sub num">${on.filter(t => t.status === "available").length} free · ${on.length} in</span></button>`;
+  }).join("") + `</div><div class="tlist g-${tab}">`;
+  const nx = next(tab);
+  onDuty(tab).forEach((t, i) => {
+    const rq = waitingReqFor(t.id).length;
+    h += `<button class="trow ${nx && nx.id === t.id ? "up" : ""}" data-act="open-tech" data-tech="${t.id}">
+      <span class="pos num">${i + 1}</span>
+      <span style="min-width:0"><span class="tn">${esc(t.name)}</span><span class="ts">${rq ? `<span class="rq">${rq} request${rq > 1 ? "s" : ""} waiting</span>` : t.reqs ? t.reqs + " request" + (t.reqs > 1 ? "s" : "") + " today" : "in " + fmt(t.checkinAt)}</span></span>
+      ${techStatus(t)}
+      <span class="turns num">${t.turns}<small>turns</small></span></button>`;
+  });
+  const off = S.techs.filter(t => t.group === tab && t.status === "off");
+  if (off.length) {
+    h += `<div class="tgroup-label">Not checked in · ${off.length}</div>`;
+    off.forEach(t => { h += `<button class="trow offrow" data-act="open-tech" data-tech="${t.id}"><span class="pos">–</span><span class="tn">${esc(t.name)}</span>${techStatus(t)}<span class="turns num">${t.turns}<small>turns</small></span></button>`; });
+  }
+  document.getElementById("techs").innerHTML = h + `</div>`;
+}
+function renderCounts() {
+  const act = activeVisits();
+  const w = act.filter(v => !v.lines.some(l => l.status === "in")).length;
+  const i = act.length - w;
+  document.getElementById("counts").innerHTML =
+    `<span class="count"><b class="num">${w}</b><span>waiting</span></span>` +
+    `<span class="count"><b class="num">${i}</b><span>in service</span></span>` +
+    `<button class="count" data-act="open-done"><b class="num">${S.done.length}</b><span>done today</span></button>`;
+  document.getElementById("clock").textContent = fmt(now());
+}
+function renderBanner() {
+  const b = S.ui.banner, el = document.getElementById("banner");
+  if (!b) { el.innerHTML = ""; return; }
+  const t = tech(b.techId);
+  el.innerHTML = `<div class="banner" role="alert"><p><strong>${esc(t.name)}</strong> checked in at ${fmt(t.checkinAt)} with 0 turns. ${GROUPS[t.group].label} average is ${b.avg}. With 0 turns, ${esc(t.name)} goes to the top of the line.</p>
+    <button class="btn" data-act="banner-set" data-n="${b.avg}">Set to ${b.avg} turns</button>
+    <button class="btn" data-act="open-adjust" data-tech="${t.id}">Adjust…</button>
+    <button class="btn ghost" data-act="banner-keep">Keep 0</button></div>`;
+}
+
+// ---------- Modals ----------
+function modal(html, groupCls = "") {
+  document.getElementById("overlay").innerHTML = `<div class="scrim" data-act="scrim"><div class="sheet ${groupCls}" role="dialog" aria-modal="true">${html}</div></div>`;
+  const f = document.querySelector(".sheet [autofocus]"); if (f) f.focus();
+}
+function closeModal() { S.ui.modal = null; S.ui.call = null; document.getElementById("overlay").innerHTML = ""; }
+function renderModal() {
+  const m = S.ui.modal;
+  if (S.ui.call) {
+    const c = S.ui.call;
+    return modal(`<div class="call g-${c.group}"><div class="k">Call on radio</div><div class="big">${esc(c.tech)}</div>
+      <div class="detail">${GROUPS[c.group].label} · ${esc(c.service)} · for ${esc(c.customer)}${c.req ? " (request)" : ""}</div></div>
+      <button class="btn primary" data-act="close" autofocus>Called</button>`, "");
+  }
+  if (!m) { document.getElementById("overlay").innerHTML = ""; return; }
+  if (m.type === "tech") {
+    const t = tech(m.techId);
+    const self = t.status === "off" ? `<button class="btn primary" data-act="pin" data-do="checkin">Check in</button>`
+      : `${t.status === "break" ? `<button class="btn primary" data-act="pin" data-do="back">Back from break</button>` : t.status === "available" ? `<button class="btn" data-act="pin" data-do="break">Start break</button>` : ""}
+         ${t.status !== "busy" ? `<button class="btn" data-act="pin" data-do="checkout">Check out</button>` : `<p class="sub" style="margin:0">Busy with a customer. Finish the service on the customer card.</p>`}`;
+    return modal(`<h3>${esc(t.name)}</h3><p class="sub">${GROUPS[t.group].label} · ${t.turns} turns · ${t.reqs} requests today</p>
+      <div class="sec">Technician · needs PIN</div><div class="row">${self}</div>
+      <div class="sec">Manager</div><div class="row"><button class="btn" data-act="open-adjust" data-tech="${t.id}">Adjust turns</button></div>
+      <div class="phone"><span>Phone</span><b class="num">${esc(t.phone)}</b><button class="btn small" data-act="copy" data-text="${esc(t.phone)}">Copy</button></div>
+      <button class="btn ghost" data-act="close">Close</button>`);
+  }
+  if (m.type === "pin") {
+    const t = tech(m.techId);
+    const label = { checkin: "Check in", break: "Start break", back: "Back from break", checkout: "Check out" }[m.do];
+    return modal(`<h3>${esc(t.name)}: ${label}</h3><p class="sub">Enter your 4-digit PIN</p>
+      <div class="pin-dots" aria-label="${m.pin.length} of 4 digits">${[0,1,2,3].map(i => `<i class="${i < m.pin.length ? "on" : ""}"></i>`).join("")}</div>
+      <p class="err">${m.err || ""}</p>
+      <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n => `<button data-act="key" data-k="${n}">${n}</button>`).join("")}<button data-act="close" style="font-size:15px">Cancel</button><button data-act="key" data-k="0">0</button><button data-act="key" data-k="del" aria-label="Delete">⌫</button></div>`);
+  }
+  if (m.type === "adjust") {
+    const t = tech(m.techId);
+    const reasons = ["Late check-in", "Missed turn", "Assigned by mistake", "Other"];
+    return modal(`<h3>Adjust turns · ${esc(t.name)}</h3><p class="sub">Every change is saved in Activity with your reason.</p>
+      <div class="stepper"><button data-act="step" data-d="-1" aria-label="One less">−</button><b class="num">${m.to}</b><button data-act="step" data-d="1" aria-label="One more">+</button></div>
+      <div class="sec">Reason</div><div class="row">${reasons.map(r => `<button class="btn small" aria-pressed="${m.reason === r}" data-act="reason" data-r="${r}" style="${m.reason === r ? "background:var(--ink);color:var(--ink-fg)" : ""}">${r}</button>`).join("")}</div>
+      ${m.reason === "Other" ? `<label for="why">Describe the reason<input id="why" type="text" value="${esc(m.note || "")}" placeholder="e.g. Gave her turn to Hoa"></label>` : ""}
+      <div class="row"><button class="btn ghost" data-act="close">Cancel</button><button class="btn primary" data-act="save-adjust" ${!m.reason || m.to === t.turns ? "disabled" : ""}>Save ${m.to} turns</button></div>`);
+  }
+  if (m.type === "override") {
+    const [v, l] = lineOf(m.lineId);
+    const opts = onDuty(l.group).filter(t => t.status === "available");
+    return modal(`<h3>Pick a technician</h3><p class="sub">${esc(v.name)} · ${GROUPS[l.group].label}: ${esc(l.service)}. Picking out of order is noted in Activity.</p>
+      <div class="list g-${l.group}">${opts.length ? opts.map((t, i) => `<button class="opt" data-act="assign" data-override="1" data-line="${l.id}" data-tech="${t.id}"><span><strong>${esc(t.name)}</strong> <span class="status">· ${i === 0 ? "first in line" : "#" + (i + 1) + " in line"}${waitingReqFor(t.id).length ? " · has a request waiting" : ""}</span></span><span class="num">${t.turns} turns</span></button>`).join("") : `<div class="empty">No free ${esc(GROUPS[l.group].label.toLowerCase())} technician right now.</div>`}</div>
+      <button class="btn ghost" data-act="close">Cancel</button>`);
+  }
+  if (m.type === "add") {
+    const blocks = m.groups.map(g => {
+      const sel = m.sel[g] || {};
+      const techs = onDuty(g);
+      return `<div class="gblock g-${g}"><strong>${GROUPS[g].label}</strong>
+        <div class="svcchips">${GROUPS[g].services.map(s => `<button type="button" aria-pressed="${sel.service === s}" data-act="svc" data-g="${g}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}</div>
+        <label for="rq-${g}">Request a technician (optional)
+        <select id="rq-${g}" data-act-change="req" data-g="${g}"><option value="">Anyone · fastest</option>${techs.map(t => {
+          const q = waitingReqFor(t.id).length;
+          const st = t.status === "available" && !q ? "free now" : t.status === "busy" ? "busy" : t.status === "break" ? "on break" : "free";
+          return `<option value="${t.id}" ${sel.reqTech === t.id ? "selected" : ""}>${esc(t.name)} — ${st}${q ? ` · ${q} waiting` : ""}</option>`;
+        }).join("")}</select></label></div>`;
+    }).join("");
+    return modal(`<h3>New walk-in</h3>
+      <form id="addform" style="display:grid;gap:12px">
+      <div class="row"><label for="cn" style="flex:1 1 180px">Name<input id="cn" type="text" value="${esc(m.name)}" autocomplete="off" autofocus></label>
+      <label for="cp" style="flex:1 1 160px">Phone<input id="cp" type="tel" value="${esc(m.phone)}" autocomplete="off"></label></div>
+      <div class="sec">Services · pick one or more groups</div>
+      <div class="gtoggle">${GKEYS.map(g => `<button type="button" class="g-${g}" aria-pressed="${m.groups.includes(g)}" data-act="gtoggle" data-g="${g}">${GROUPS[g].label}<small>${GROUPS[g].services.slice(0, 2).join(", ")}…</small></button>`).join("")}</div>
+      ${blocks}
+      <p class="err">${m.err || ""}</p>
+      <div class="row"><button type="button" class="btn ghost" data-act="close">Cancel</button><button type="submit" class="btn primary">Add to waiting list</button></div></form>`);
+  }
+  if (m.type === "done") {
+    return modal(`<h3>Done today · ${S.done.length}</h3>
+      <div class="donelist">${S.done.slice(0, 200).map(d => `<div class="logrow"><time class="num">${fmt(d.at)}</time><span>${esc(d.name)} · ${d.groups.map(g => GROUPS[g].label).join(" + ")}</span></div>`).join("")}</div>
+      <button class="btn ghost" data-act="close">Close</button>`);
+  }
+  if (m.type === "log") {
+    return modal(`<h3>Activity</h3><p class="sub">Every assignment, turn change and status change, newest first.</p>
+      <div class="loglist">${S.log.slice(0, 200).map(e => `<div class="logrow"><time class="num">${fmt(e.t)}</time><span>${esc(e.text)}</span></div>`).join("")}</div>
+      <button class="btn ghost" data-act="close">Close</button>`);
+  }
+}
+
+function render() {
+  const sug = suggestions();
+  renderCounts(); renderBanner(); renderList(sug); renderTechs(sug); renderModal();
+}
+
+// ---------- Events ----------
+function readAddForm() { const m = S.ui.modal; if (m && m.type === "add") { const n = document.getElementById("cn"), p = document.getElementById("cp"); if (n) m.name = n.value; if (p) m.phone = p.value; } }
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if (!el) return;
+  const a = el.dataset.act, m = S.ui.modal;
+  if (a === "scrim") { if (e.target === el) { closeModal(); render(); } return; }
+  if (a === "close") { closeModal(); render(); return; }
+  if (a === "assign") { S.ui.modal = null; assign(el.dataset.line, el.dataset.tech, el.dataset.override ? "override" : "suggested"); return; }
+  if (a === "finish") { finish(el.dataset.line); return; }
+  if (a === "to-anyone") { const [v, l] = lineOf(el.dataset.line); addLog(`${v.name} switched from ${tech(l.reqTech).name} to anyone.`); l.reqTech = null; save(); render(); return; }
+  if (a === "open-override") { S.ui.modal = { type: "override", lineId: el.dataset.line }; render(); return; }
+  if (a === "tab") { S.ui.tab = el.dataset.g; save(); render(); return; }
+  if (a === "open-tech") { S.ui.modal = { type: "tech", techId: el.dataset.tech }; render(); return; }
+  if (a === "pin") { S.ui.modal = { type: "pin", techId: m.techId, do: el.dataset.do, pin: "" }; render(); return; }
+  if (a === "key") {
+    if (el.dataset.k === "del") m.pin = m.pin.slice(0, -1); else if (m.pin.length < 4) m.pin += el.dataset.k;
+    m.err = "";
+    if (m.pin.length === 4) {
+      const t = tech(m.techId);
+      if (m.pin === t.pin) { const d = m.do; S.ui.modal = null; techAction(t, d); return; }
+      m.pin = ""; m.err = "Wrong PIN. Try again.";
+    }
+    render(); return;
+  }
+  if (a === "open-adjust") { const t = tech(el.dataset.tech); S.ui.modal = { type: "adjust", techId: t.id, to: S.ui.banner && S.ui.banner.techId === t.id ? S.ui.banner.avg : t.turns, reason: S.ui.banner && S.ui.banner.techId === t.id ? "Late check-in" : "" }; render(); return; }
+  if (a === "step") { m.to = Math.max(0, m.to + Number(el.dataset.d)); render(); return; }
+  if (a === "reason") { const w = document.getElementById("why"); if (w) m.note = w.value; m.reason = el.dataset.r; render(); return; }
+  if (a === "save-adjust") {
+    const w = document.getElementById("why"); const note = w ? w.value.trim() : "";
+    if (m.reason === "Other" && !note) { toast("Write a short reason first."); return; }
+    const t = tech(m.techId); S.ui.modal = null; adjust(t, m.to, m.reason === "Other" ? note : m.reason); return;
+  }
+  if (a === "banner-set") { const t = tech(S.ui.banner.techId); adjust(t, Number(el.dataset.n), "Late check-in"); return; }
+  if (a === "banner-keep") { addLog(`Manager kept ${tech(S.ui.banner.techId).name} at 0 turns after late check-in.`); S.ui.banner = null; save(); render(); return; }
+  if (a === "open-add") { S.ui.modal = { type: "add", name: "", phone: "", groups: [], sel: {} }; render(); return; }
+  if (a === "gtoggle") { readAddForm(); const g = el.dataset.g; m.groups = m.groups.includes(g) ? m.groups.filter(x => x !== g) : m.groups.concat(g); render(); return; }
+  if (a === "svc") { readAddForm(); const g = el.dataset.g; m.sel[g] = m.sel[g] || {}; m.sel[g].service = m.sel[g].service === el.dataset.s ? null : el.dataset.s; render(); return; }
+  if (a === "open-done") { S.ui.modal = { type: "done" }; render(); return; }
+  if (a === "open-log") { S.ui.modal = { type: "log" }; render(); return; }
+  if (a === "copy") { const txt = el.dataset.text; try { navigator.clipboard.writeText(txt).then(() => toast("Phone number copied"), () => toast(txt)); } catch (err) { toast(txt); } return; }
+  if (a === "kiosk") {
+    const used = new Set(activeVisits().map(v => v.name));
+    const name = CUST.find(n => !used.has(n)) || pick(CUST);
+    const r = Math.random();
+    const picks = r < .5 ? [{ group: "hands" }] : r < .75 ? [{ group: "feet" }] : r < .9 ? [{ group: "feet" }, { group: "hands" }] : [{ group: "wax" }];
+    if (Math.random() < .25) { const t = pick(onDuty(picks[0].group)); if (t) picks[0].reqTech = t.id; }
+    picks.forEach(p => p.service = pick(GROUPS[p.group].services));
+    addVisit(name, phone(), picks, "kiosk"); return;
+  }
+  if (a === "reset") { S = seed(); save(); render(); toast("Demo data reset."); return; }
+});
+document.addEventListener("change", e => {
+  const el = e.target; if (el.dataset.actChange !== "req") return;
+  readAddForm(); const m = S.ui.modal, g = el.dataset.g; m.sel[g] = m.sel[g] || {}; m.sel[g].reqTech = el.value || null;
+});
+document.addEventListener("submit", e => {
+  if (e.target.id !== "addform") return;
+  e.preventDefault(); readAddForm();
+  const m = S.ui.modal;
+  if (!m.name.trim()) { m.err = "Add the customer's name."; render(); return; }
+  if (!m.groups.length) { m.err = "Pick at least one service group."; render(); return; }
+  const picks = m.groups.map(g => ({ group: g, service: (m.sel[g] || {}).service, reqTech: (m.sel[g] || {}).reqTech }));
+  S.ui.modal = null; addVisit(m.name.trim(), m.phone.trim() || "—", picks, "front desk");
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && (S.ui.modal || S.ui.call)) { closeModal(); render(); } });
+document.getElementById("q").addEventListener("input", e => { S.ui.q = e.target.value; render(); });
+
+S = load();
+S.ui.q = ""; S.ui.modal = null; S.ui.call = null;
+render();
+setInterval(() => { if (!S.ui.modal && !S.ui.call) render(); else renderCounts(); }, 30000);
+})();
+</script>

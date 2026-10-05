@@ -32,4 +32,7 @@
 7. **Cuối ngày:** báo cáo turn, lịch sử chỉnh sửa, khách & thời gian chờ. Sáng hôm sau reset.
 
 ## Còn cần hỏi
-- M13: mục báo cáo "khác" là gì?
+- M13: mục báo cáo "khác" là gì? *(để sau — hiện tập trung vào màn hình manager trong giờ mở cửa)*
+
+## Prototype
+- `prototype/front-desk.html`: màn hình thao tác của manager/lễ tân trong giờ mở cửa (dữ liệu mẫu).
