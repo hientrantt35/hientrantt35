@@ -45,4 +45,20 @@
   - Khi phần 1 xong, phần 2 **tự động được ưu tiên/giữ chỗ** trong hàng nhóm kia — không bắt khách xếp lại từ đầu (cần xác nhận luật tiệm).
   - Mỗi phần tính turn cho nhóm của nó (cần xác nhận).
 - **Ảnh hưởng tới kế hoạch:** Mô hình dữ liệu tách Visit → nhiều "service line"; thêm thẻ khách nhiều phần vào màn hình lễ tân.
-- **Cần hỏi thêm:** Mỗi nhóm có tính 1 turn không? Thợ có mang phiếu xuống ngay hay để lễ tân tự đến lấy? Có khi nào phiếu bị thất lạc/nhầm chưa?
+- **Đã xác nhận thêm:** Mỗi thợ (mỗi phần) được tính **1 turn**. Phiếu **có bị thất lạc**; POS **in lại được** nên không mất dữ liệu, nhưng tốn thêm thao tác và thời gian.
+- **Cần hỏi thêm:** Thợ có mang phiếu xuống ngay hay để lễ tân tự đến lấy?
+
+## P3. Thợ làm xong phần của mình nhưng máy vẫn coi là "bận" vì khách chưa thanh toán
+
+- **Chuyện gì xảy ra:** Với khách làm nhiều phần (P2), thợ phần 1 làm xong nhưng **cả lượt khách chưa thanh toán**, nên POS **không tự chuyển thợ đó sang rảnh (free)**. Thợ phải **tự đổi trạng thái trên monitor** ở quầy, hoặc **manager đổi giúp**.
+- **Ai bị ảnh hưởng:** Thợ (có thể mất lượt nếu quên đổi), manager (bị gọi đổi giúp), lễ tân (gợi ý thợ sai), khách đang chờ (chờ lâu hơn dù có thợ rảnh).
+- **Nguyên nhân gốc:** POS gắn trạng thái thợ với **thanh toán của cả phiếu**, trong khi thực tế thợ rảnh khi **phần việc của họ** xong.
+- **Hệ quả có thể xảy ra (cần xác nhận):** Thợ quên đổi → hàng chờ hiển thị sai → thợ bị bỏ qua (thiệt turn) → mất niềm tin, tranh cãi.
+- **Phát hiện phụ:** Monitor ở quầy **không chỉ để xem** — thợ **có chạm/thao tác** trên đó để đổi trạng thái.
+- **Gợi ý cho thiết kế:**
+  - Tách 2 khái niệm: **phần dịch vụ xong** (thợ rảnh ngay) và **phiếu thanh toán xong** (đóng lượt khách).
+  - Bấm "Phần 1 xong" (P2) → thợ phần 1 **tự động về trạng thái rảnh** và trở lại hàng chờ, không cần đổi tay.
+  - Vẫn cho thợ tự đổi trạng thái trên monitor (nghỉ, quay lại) bằng 1 chạm vào tên mình; mọi thay đổi ghi lịch sử.
+  - Cảnh báo cho lễ tân nếu một thợ "bận" quá lâu bất thường (vd. lâu hơn thời lượng dịch vụ + 15 phút).
+- **Ảnh hưởng tới kế hoạch:** Trạng thái thợ dựa trên **phần dịch vụ**, không dựa trên thanh toán; monitor có thao tác đơn giản cho thợ.
+- **Cần hỏi thêm:** Bạn có thấy thợ quên đổi trạng thái và bị bỏ lượt không? Đổi trạng thái trên monitor có cần mã PIN/xác nhận gì không? Khách chỉ làm 1 dịch vụ thì thợ có cũng bị "kẹt bận" chờ thanh toán không?

@@ -54,7 +54,7 @@
 5. **Thợ không được từ chối** khách khi tới lượt.
 6. Thợ đang làm khách (busy) hoặc nghỉ (break) tạm không được gợi ý, **giữ nguyên số turn**.
 7. **Chỉnh tay** (cộng/trừ turn, bỏ qua thợ vì lý do thực tế như đang dở tay/đi vệ sinh): chỉ manager, **bắt buộc ghi lý do**, lưu lịch sử.
-8. Cần xác nhận khi quan sát: khách làm dịch vụ ở **2 nhóm** (vd. tay + chân) thì mỗi nhóm tính 1 turn cho thợ của nhóm đó?
+8. Khách làm dịch vụ ở **2 nhóm** (vd. chân + tay gắn tips): làm **lần lượt**, **mỗi thợ được 1 turn**. Thợ **rảnh ngay khi phần của mình xong**, không phụ thuộc thanh toán.
 
 ## 4. Phạm vi MVP (cho hạn cuối học kỳ)
 
@@ -65,10 +65,11 @@
    - Bấm **"Assign"** → hiện to *"Call: Linh — Pedicure"* để đọc qua bộ đàm.
    - Nút **Done** khi thợ làm xong; đổi trạng thái thợ (break/back).
    - Khách làm nhiều nhóm (vd. chân + tay): **một thẻ khách hiện tiến độ từng phần** và thợ của từng phần; bấm "phần 1 xong" + nhập tiền → phần 2 tự vào đầu hàng nhóm kia và **tự nhắc gọi thợ** khi có người rảnh — thay cho phiếu giấy chờ ở quầy *(P2)*.
+   - Thợ **tự về trạng thái rảnh khi phần dịch vụ của mình xong**, không phải chờ khách thanh toán *(P3)*.
    - Mỗi thợ hiện **số khách request đang chờ** — trả lời khách ngay, không phải đếm tay *(P1)*.
    - Tra nhanh **SĐT thợ** (bấm gọi / gửi SMS từ máy).
    - Chống xung đột: nếu máy kia vừa gán thợ đó, máy này báo ngay và gợi ý người kế tiếp.
-3. **Monitor hàng chờ** ở quầy: mỗi nhóm một cột, thứ tự thợ, số turn, trạng thái — đọc rõ từ 2–3 mét.
+3. **Monitor hàng chờ** ở quầy: mỗi nhóm một cột, thứ tự thợ, số turn, trạng thái — đọc rõ từ 2–3 mét. Thợ **chạm vào tên mình** để đổi trạng thái (nghỉ / quay lại) *(P3)*.
 4. **Màn hình manager**: check-in/out thợ, quản lý nhóm & dịch vụ, chỉnh turn có lý do, **báo cáo cuối ngày** (turn/thợ, request/thợ, số khách), xem lịch sử thao tác.
 
 **Không làm trong học kỳ này (v2+):**
@@ -151,7 +152,7 @@ Vì luật turn đã khá rõ, **code phần lõi chạy song song với nghiên
 
 ## 11. Câu hỏi còn mở (trả lời khi quan sát tại tiệm)
 
-1. Khách làm dịch vụ ở 2 nhóm (tay + chân): đã biết làm **lần lượt** (P2); còn cần xác nhận mỗi nhóm có tính 1 turn không.
+1. ~~Khách làm 2 nhóm~~ — đã xác nhận: làm lần lượt, **mỗi thợ 1 turn** (P2).
 2. Có những nhóm nào cụ thể, mỗi nhóm bao nhiêu thợ?
 3. Thợ check-in buổi sáng bằng cách nào? Thợ về sớm / vào trễ thì xử lý turn ra sao?
 4. POS hiện tại bất cập cụ thể ở bước nào (đếm số chạm, thời gian mỗi lần gán)?
