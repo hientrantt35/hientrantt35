@@ -84,3 +84,16 @@
   - Khách về rồi thì lễ tân **gần như không xem lại** trong ngày → khách đã xong **không cần nằm ở màn hình chính**; tab "Đã xong hôm nay" chỉ là phụ (đặt ở góc, không chiếm chỗ).
   - List hiện **sắp xếp theo giờ check-in** → khách cũ (đã xong) nằm trên, khách mới bị đẩy xuống dưới, càng về chiều càng phải cuộn nhiều.
 - **Hệ quả thiết kế:** Danh sách chính chỉ gồm khách đang hoạt động; trong nhóm "đang chờ" vẫn giữ thứ tự **giờ check-in** (quen với lễ tân, công bằng với khách).
+
+## P5. Với mỗi khách, cần thấy ngay: khách làm dịch vụ của nhóm nào, ai đang làm dịch vụ nào
+
+- **Nhu cầu (từ quan sát):** Với từng khách, thông tin **quan trọng nhất** là: khách làm **những dịch vụ nào**, thuộc **nhóm thợ nào**, và **thợ nào đang làm phần nào**.
+- **Ai cần:** Lễ tân (gán thợ, gọi thợ, trả lời khách, tính tiền), manager (xử lý sự cố, khiếu nại), thợ phần 2 (biết khách đang ở đâu — liên quan P2).
+- **Liên quan:** P2 (khách nhiều nhóm), P3 (trạng thái thợ theo từng phần), P4 (list dài → thông tin này càng khó thấy).
+- **Gợi ý cho thiết kế — "thẻ khách" (customer card):**
+  - Mỗi dòng dịch vụ = **nhãn nhóm (màu riêng mỗi nhóm)** + tên dịch vụ + **tên thợ** + trạng thái.
+    Ví dụ: `Anna · 2:15pm` → 🟦 *Pedicure — Mai — xong* · 🟪 *Gel-X tips — Tuấn — đang làm*
+  - Màu nhóm dùng **thống nhất** trên màn hình lễ tân, monitor, kiosk, báo cáo.
+  - Tra ngược theo thợ: chạm vào tên thợ → thấy thợ đang làm cho khách nào, dịch vụ gì.
+- **Ảnh hưởng tới kế hoạch:** Thẻ khách là **thành phần giao diện trung tâm** của màn hình lễ tân; cần làm prototype & test sớm.
+- **Cần hỏi thêm:** POS hiện tại có hiển thị thông tin này không, hay phải mở từng phiếu? Thông tin này hay được dùng nhất vào lúc nào (gọi thợ, khách hỏi, tính tiền)?

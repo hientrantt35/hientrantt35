@@ -66,6 +66,7 @@
    - **Chỉ hiện khách đang hoạt động** (chờ / đang làm / chờ phần 2); khách xong tự chuyển sang tab "Đã xong hôm nay"; có ô tìm kiếm tên/SĐT; khách chờ lâu được tô màu *(P4 — ngày đông 200–300 khách)*.
    - Bấm **"Assign"** → hiện to *"Call: Linh — Pedicure"* để đọc qua bộ đàm.
    - Nút **Done** khi thợ làm xong; đổi trạng thái thợ (break/back).
+   - **Thẻ khách** là thành phần trung tâm: mỗi dòng dịch vụ hiện **nhãn màu nhóm + dịch vụ + thợ đang làm + trạng thái**; chạm tên thợ để tra ngược *(P5)*.
    - Khách làm nhiều nhóm (vd. chân + tay): **một thẻ khách hiện tiến độ từng phần** và thợ của từng phần; bấm "phần 1 xong" + nhập tiền → phần 2 tự vào đầu hàng nhóm kia và **tự nhắc gọi thợ** khi có người rảnh — thay cho phiếu giấy chờ ở quầy *(P2)*.
    - Thợ **tự về trạng thái rảnh khi phần dịch vụ của mình xong**, không phải chờ khách thanh toán *(P3)*.
    - Mỗi thợ hiện **số khách request đang chờ** — trả lời khách ngay, không phải đếm tay *(P1)*.
