@@ -1,6 +1,6 @@
 # Kế hoạch dự án: Phần mềm chia turn cho tiệm nail (~50 thợ)
 
-> Bản nháp v0.1 — 2026-10-02. Đây là tài liệu sống, sẽ cập nhật sau mỗi vòng nghiên cứu/thử nghiệm.
+> Bản nháp v0.2 — cập nhật 2026-10-05. Đây là tài liệu sống, sẽ cập nhật sau mỗi vòng nghiên cứu/thử nghiệm.
 
 ## 1. Bài toán
 
@@ -11,6 +11,22 @@
 - **Không có dữ liệu** — cuối ngày khó đối chiếu ai làm bao nhiêu turn, khó tính lương/hoa hồng.
 
 **Mục tiêu sản phẩm:** chia turn *nhanh, minh bạch, ai cũng thấy được*, theo đúng luật riêng của từng tiệm.
+
+## 1b. Bối cảnh & luật đã xác nhận (hỏi đáp 2026-10-05)
+
+| # | Câu hỏi | Trả lời | Ảnh hưởng tới thiết kế |
+|---|---|---|---|
+| 1 | Mục tiêu dự án | **Cả hai**: đồ án HCD + hướng tới sản phẩm thật | Làm nghiên cứu bài bản, nhưng kiến trúc phải đủ chắc để dùng thật |
+| 2 | Tiệm để nghiên cứu/pilot | **Có, nhưng chưa thân** | Cần kế hoạch tiếp cận: thư giới thiệu, consent form, xin lịch giờ vắng khách |
+| 3 | Cách chia turn hiện tại | **Phần mềm có sẵn** | Có đối thủ trực tiếp → phải phân tích kỹ nó; giá trị của mình là *làm tốt hơn*, không phải *số hoá giấy* |
+| 4 | Vấn đề hiện tại | **Còn nhiều bất cập; khó dùng / chậm** | Trọng tâm là UX của lễ tân: ít bước, nhanh giờ cao điểm. Cần quan sát để liệt kê bất cập cụ thể |
+| 5 | Phần mềm đó là gì | **Chức năng nằm trong máy POS** | Tiệm khó bỏ POS → app của mình nên **chạy song song** POS (chỉ lo chia turn), tích hợp POS để sau |
+| 6 | Cách tính turn | **Mỗi khách = 1 turn** | Không cần full/half; giữ cấu hình được cho tiệm khác |
+| 7 | Khách request | **Không tính turn** | Thợ làm khách request vẫn giữ vị trí; vẫn đếm riêng để báo cáo |
+| 8 | Thợ từ chối khách | **Không được từ chối** | Không cần luật phạt; nhưng cần nút "bỏ qua" có lý do (thợ đang dở tay, đi vệ sinh…) |
+| 9 | Kỹ năng | **Chia nhóm/khu vực** — mỗi nhóm một hàng turn riêng | Hệ thống có **nhiều hàng chờ song song**; dịch vụ gắn với nhóm |
+| 10 | Thợ ở nhiều nhóm? | **Chỉ 1 nhóm** | Mô hình đơn giản: Thợ → 1 Nhóm |
+| 11 | Ai đứng đầu hàng | **Ít turn nhất**, bằng nhau thì check-in sớm hơn | Thuật toán §6 giữ nguyên, áp dụng trong từng nhóm |
 
 ## 2. Người dùng (giả thuyết — cần kiểm chứng)
 
