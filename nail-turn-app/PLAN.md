@@ -34,6 +34,7 @@
 | 16 | Check-in khách | **Làm kiosk mới** trong app của mình | Thêm màn hình kiosk: khách nhập tên, SĐT, chọn dịch vụ (→ nhóm), chọn thợ request (tuỳ chọn) |
 | 17 | Ngôn ngữ | **Chỉ tiếng Anh** | Một ngôn ngữ, chữ rõ, từ ngữ đơn giản |
 | 18 | Ai code | **Bạn + Claude** | Chọn công nghệ đơn giản, dịch vụ có sẵn, ít phải tự vận hành server |
+| — | Quy mô | **200–300 khách/ngày** vào ngày đông (từ quan sát) | Thiết kế & test với dữ liệu 300 khách/ngày |
 | 19 | Thời hạn | **Cuối học kỳ này (~giữa tháng 12/2026, ~10 tuần)** | Rút gọn lộ trình, làm song song nghiên cứu và code phần lõi; pilot ngắn |
 
 ## 2. Người dùng
@@ -62,6 +63,7 @@
 1. **Kiosk khách** (2 máy): nhập tên + SĐT → chọn dịch vụ → (tuỳ chọn) chọn thợ request → vào hàng chờ khách. Khi chọn thợ, **hiện số người đang chờ thợ đó** cạnh lựa chọn "bất kỳ thợ nào" *(xem RESEARCH-FINDINGS P1)*.
 2. **Màn hình lễ tân** (2 máy, đồng bộ tức thì):
    - Danh sách khách đang chờ; mỗi khách hiện **thợ được gợi ý** của nhóm tương ứng.
+   - **Chỉ hiện khách đang hoạt động** (chờ / đang làm / chờ phần 2); khách xong tự chuyển sang tab "Đã xong hôm nay"; có ô tìm kiếm tên/SĐT; khách chờ lâu được tô màu *(P4 — ngày đông 200–300 khách)*.
    - Bấm **"Assign"** → hiện to *"Call: Linh — Pedicure"* để đọc qua bộ đàm.
    - Nút **Done** khi thợ làm xong; đổi trạng thái thợ (break/back).
    - Khách làm nhiều nhóm (vd. chân + tay): **một thẻ khách hiện tiến độ từng phần** và thợ của từng phần; bấm "phần 1 xong" + nhập tiền → phần 2 tự vào đầu hàng nhóm kia và **tự nhắc gọi thợ** khi có người rảnh — thay cho phiếu giấy chờ ở quầy *(P2)*.

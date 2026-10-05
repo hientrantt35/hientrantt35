@@ -66,3 +66,18 @@
   - Khách **chỉ làm 1 dịch vụ**: xong thì thợ **dẫn khách xuống tính tiền → turn kết thúc**. Trường hợp này phần việc xong và thanh toán xảy ra gần như cùng lúc, nên **không bị kẹt**. Vấn đề chỉ xảy ra với khách nhiều phần (P2).
 - **Insight cho case study:** Hệ thống bắt con người "nhớ" để bù cho một quy tắc sai (rảnh = đã thanh toán), rồi phạt họ khi quên. Thiết kế tốt nên làm cho việc quên **không thể xảy ra**, thay vì bắt người dùng chịu trách nhiệm.
 - **Cần hỏi thêm:** Đổi trạng thái trên monitor có cần mã PIN/xác nhận gì không?
+
+## P4. Ngày đông (200–300 khách), danh sách khách dài dằng dặc vì khách đã xong vẫn nằm trong list
+
+- **Chuyện gì xảy ra:** Những ngày có 200–300 khách, danh sách khách trên POS vẫn giữ cả những khách **đã làm xong dịch vụ**, nên list ngày càng dài.
+- **Ai bị ảnh hưởng:** Lễ tân (phải cuộn, dò tìm khách đang chờ — đúng lúc đông nhất), khách (chờ lâu hơn), và cả P1 (đếm khách request càng khó khi list dài).
+- **Nguyên nhân gốc:** Một danh sách duy nhất trộn **khách cần xử lý** với **khách đã xong** — giao diện không phân biệt "việc đang cần làm" và "lịch sử".
+- **Dữ liệu quy mô:** **200–300 khách/ngày** vào ngày đông → dùng con số này để thiết kế và test (dữ liệu giả, test tốc độ).
+- **Gợi ý cho thiết kế:**
+  - Màn hình lễ tân mặc định chỉ hiện **khách đang hoạt động**, chia theo trạng thái: *Đang chờ* → *Đang làm* → *Chờ phần 2 / chờ thanh toán*.
+  - Khách **xong tự động rời khỏi danh sách chính**, vào tab *"Đã xong hôm nay"* (vẫn tìm lại được khi cần in lại phiếu, xem lịch sử).
+  - **Ô tìm kiếm** theo tên / 4 số cuối SĐT.
+  - Khách chờ lâu được **đẩy lên và tô màu** (vd. chờ > 20 phút).
+  - Đầu màn hình có **con số tóm tắt**: đang chờ 12 · đang làm 34 · xong 158.
+- **Ảnh hưởng tới kế hoạch:** Màn hình lễ tân chỉ hiện khách đang hoạt động; tạo dữ liệu test 300 khách/ngày.
+- **Cần hỏi thêm:** Lễ tân có cần xem lại khách đã xong không — để làm gì (in lại phiếu, tra khách quen, giải quyết khiếu nại)? Hiện list đang sắp xếp theo gì?
