@@ -20,6 +20,7 @@
 | M11 | Thiết bị | **Màn cảm ứng** (2 máy quầy) + **iPad** (2 kiosk) | Thiết kế touch-first: nút ≥ 48px, không dựa vào hover/chuột |
 | M12 | Monitor cho thợ | **Chung máy lễ tân** — thợ bấm trực tiếp trên máy gán thợ | Máy quầy có **thanh hàng chờ thợ** luôn hiện; thợ chạm tên → **bảng PIN nổi lên** → xong tự đóng, **không làm mất màn hình lễ tân đang dùng**. Sau pilot cân nhắc thêm 1 tablet riêng cho thợ |
 | M13 | Báo cáo cuối ngày | **Turn mỗi thợ** (walk-in + request), **lịch sử chỉnh sửa**, **tổng khách & thời gian chờ**, + một mục khác (đang hỏi lại) | Trang báo cáo theo ngày; số liệu thời gian chờ dùng luôn cho case study |
+| M14 | Có tách danh sách *Waiting* / *In service* không | **Không tách** (góp ý của bạn): tách ra làm khó thấy nhanh khách nào đang request ai | **Một danh sách theo giờ check-in** (giống POS, lễ tân đã quen). Khách đang làm hiện gọn & nhạt hơn, khách chờ nổi bật (thời gian chờ + nút Assign). Bộ lọc **All / Waiting / Requests**; *Requests* **gom theo thợ được request** (vd. "Linh · 2 waiting · busy now") |
 
 ## Tóm tắt luồng chính (để build)
 

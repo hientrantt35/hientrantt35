@@ -93,6 +93,11 @@ button.count:hover { text-decoration-color: var(--ink); }
 .section-label span { color: var(--muted); font-weight: 400; }
 .section-label:first-child { margin-top: 0; }
 .card { background: var(--canvas); border: 1px solid var(--hair); border-radius: var(--r-md); padding: 20px 24px; display: grid; gap: 12px; }
+.card.busy { padding: 14px 24px; gap: 8px; background: var(--soft); border-color: var(--hair-soft); }
+.card.busy .line { padding-block: 6px; }
+.card.busy .name { font-weight: 500; }
+.filters button { min-height: 40px; }
+.filters button span { color: inherit; opacity: .6; margin-left: 4px; }
 .card-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
 .card-h .name { font-weight: 600; font-size: 17px; }
 .card-h .meta { color: var(--muted); font-size: 14px; }
@@ -112,7 +117,7 @@ button.count:hover { text-decoration-color: var(--ink); }
 .grp { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 500; }
 .grp i { width: 8px; height: 8px; border-radius: 50%; background: var(--g); }
 .svc { font-weight: 500; }
-.req { font-size: 14px; color: var(--ink); font-weight: 600; }
+.req { font-size: 14px; color: var(--accent); font-weight: 600; }
 .status { color: var(--muted); font-size: 14px; }
 .status strong { color: var(--ink); font-weight: 600; }
 .acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
@@ -225,7 +230,7 @@ button.count:hover { text-decoration-color: var(--ink); }
 <div id="banner"></div>
 <main class="main">
   <section aria-labelledby="cust-h">
-    <div class="panel-h"><h2 id="cust-h">Customers</h2><span class="hint">Oldest check-in first</span></div>
+    <div class="panel-h"><h2 id="cust-h">Customers</h2><span class="hint">In check-in order</span></div>
     <div class="list" id="list"></div>
   </section>
   <aside aria-labelledby="tech-h">
@@ -479,25 +484,39 @@ function lineHTML(v, l, sug) {
     <div class="what"><div class="top-row"><span class="grp"><i></i>${g.label}</span><span class="svc">${esc(l.service)}</span>${rq}</div>${status}</div>
     <div class="acts">${acts}</div></div>`;
 }
-function cardHTML(v, sug, waiting) {
+function cardHTML(v, sug) {
+  const waiting = !v.lines.some(l => l.status === "in");
   const wl = v.lines.find(l => l.status === "waiting" && !isLocked(v, l));
   const m = wl ? mins(waitedSince(v, wl)) : 0;
   const between = v.lines.some(l => l.status === "done");
-  const cls = waiting ? (m >= 20 ? "w-crit" : m >= 10 ? "w-warn" : "") : "";
-  return `<article class="card ${waiting ? "waiting" : ""} ${cls}">
+  return `<article class="card ${waiting ? "" : "busy"}">
     <div class="card-h"><span class="name">${esc(v.name)}</span><span class="meta num">in ${fmt(v.checkinAt)} · …${esc(v.phone.slice(-4))}</span>
-    ${waiting && between ? `<span class="note">Part 2</span>` : ""}${waiting ? waitPill(m) : ""}</div>
+    ${waiting && between ? `<span class="note">Part 2</span>` : ""}${waiting ? waitPill(m) : `<span class="wait">In service</span>`}</div>
     <div class="lines">${v.lines.map(l => lineHTML(v, l, sug)).join("")}</div></article>`;
 }
+const reqLines = v => v.lines.filter(l => l.reqTech && l.status !== "done");
 function renderList(sug) {
-  const act = activeVisits().filter(matchQ).sort((a, b) => a.checkinAt - b.checkinAt);
-  const waiting = act.filter(v => !v.lines.some(l => l.status === "in"));
-  waiting.sort((a, b) => waitedSince(a, a.lines.find(l => l.status === "waiting")) - waitedSince(b, b.lines.find(l => l.status === "waiting")));
-  const inSvc = act.filter(v => v.lines.some(l => l.status === "in"));
-  let h = `<div class="section-label">Waiting <span class="num">${waiting.length}</span></div>`;
-  h += waiting.length ? waiting.map(v => cardHTML(v, sug, true)).join("") : `<div class="empty">No one is waiting${S.ui.q ? " for this search" : ""}.</div>`;
-  h += `<div class="section-label">In service <span class="num">${inSvc.length}</span></div>`;
-  h += inSvc.length ? inSvc.map(v => cardHTML(v, sug, false)).join("") : `<div class="empty">No one in service.</div>`;
+  const all = activeVisits().filter(matchQ).sort((a, b) => a.checkinAt - b.checkinAt);
+  const isWaiting = v => !v.lines.some(l => l.status === "in");
+  const withReq = all.filter(v => reqLines(v).length);
+  const f = S.ui.filter || "all";
+  const chip = (k, label, n) => `<button aria-pressed="${f === k}" data-act="filter" data-f="${k}">${label} <span class="num">${n}</span></button>`;
+  let h = `<div class="filters svcchips">${chip("all", "All", all.length)}${chip("waiting", "Waiting", all.filter(isWaiting).length)}${chip("requests", "Requests", withReq.length)}</div>`;
+  if (f === "requests") {
+    // Group by requested technician so the desk sees who is waiting for whom.
+    const byTech = new Map();
+    withReq.forEach(v => reqLines(v).forEach(l => { if (!byTech.has(l.reqTech)) byTech.set(l.reqTech, []); if (!byTech.get(l.reqTech).includes(v)) byTech.get(l.reqTech).push(v); }));
+    if (!byTech.size) h += `<div class="empty">No request customers right now.</div>`;
+    [...byTech.entries()].sort((a, b) => b[1].length - a[1].length).forEach(([id, vs]) => {
+      const t = tech(id);
+      const w = vs.filter(v => v.lines.some(l => l.reqTech === id && l.status === "waiting")).length;
+      h += `<div class="section-label">${esc(t.name)} <span>${GROUPS[t.group].label} · ${w} waiting · ${t.status === "busy" ? "busy now" : t.status === "available" ? "free now" : t.status === "break" ? "on break" : "not in"}</span></div>`;
+      h += vs.map(v => cardHTML(v, sug)).join("");
+    });
+  } else {
+    const list = f === "waiting" ? all.filter(isWaiting) : all;
+    h += list.length ? list.map(v => cardHTML(v, sug)).join("") : `<div class="empty">No customers${S.ui.q ? " for this search" : ""}.</div>`;
+  }
   document.getElementById("list").innerHTML = h;
 }
 function techStatus(t) {
@@ -656,6 +675,7 @@ document.addEventListener("click", e => {
   if (a === "finish") { finish(el.dataset.line); return; }
   if (a === "to-anyone") { const [v, l] = lineOf(el.dataset.line); addLog(`${v.name} switched from ${tech(l.reqTech).name} to anyone.`); l.reqTech = null; save(); render(); return; }
   if (a === "open-override") { S.ui.modal = { type: "override", lineId: el.dataset.line }; render(); return; }
+  if (a === "filter") { S.ui.filter = el.dataset.f; save(); render(); return; }
   if (a === "tab") { S.ui.tab = el.dataset.g; save(); render(); return; }
   if (a === "open-tech") { S.ui.modal = { type: "tech", techId: el.dataset.tech }; render(); return; }
   if (a === "pin") { S.ui.modal = { type: "pin", techId: m.techId, do: el.dataset.do, pin: "" }; render(); return; }
