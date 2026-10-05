@@ -80,4 +80,7 @@
   - Khách chờ lâu được **đẩy lên và tô màu** (vd. chờ > 20 phút).
   - Đầu màn hình có **con số tóm tắt**: đang chờ 12 · đang làm 34 · xong 158.
 - **Ảnh hưởng tới kế hoạch:** Màn hình lễ tân chỉ hiện khách đang hoạt động; tạo dữ liệu test 300 khách/ngày.
-- **Cần hỏi thêm:** Lễ tân có cần xem lại khách đã xong không — để làm gì (in lại phiếu, tra khách quen, giải quyết khiếu nại)? Hiện list đang sắp xếp theo gì?
+- **Đã xác nhận thêm:**
+  - Khách về rồi thì lễ tân **gần như không xem lại** trong ngày → khách đã xong **không cần nằm ở màn hình chính**; tab "Đã xong hôm nay" chỉ là phụ (đặt ở góc, không chiếm chỗ).
+  - List hiện **sắp xếp theo giờ check-in** → khách cũ (đã xong) nằm trên, khách mới bị đẩy xuống dưới, càng về chiều càng phải cuộn nhiều.
+- **Hệ quả thiết kế:** Danh sách chính chỉ gồm khách đang hoạt động; trong nhóm "đang chờ" vẫn giữ thứ tự **giờ check-in** (quen với lễ tân, công bằng với khách).
