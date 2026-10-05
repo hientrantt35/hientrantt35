@@ -92,32 +92,32 @@ button.count:hover { text-decoration-color: var(--ink); }
 .section-label { font-size: 16px; font-weight: 600; margin: 24px 0 0; display: flex; gap: 8px; align-items: baseline; }
 .section-label span { color: var(--muted); font-weight: 400; }
 .section-label:first-child { margin-top: 0; }
-.card { background: var(--canvas); border: 1px solid var(--hair); border-radius: var(--r-md); padding: 20px 24px; display: grid; gap: 12px; }
-.card.busy { padding: 14px 24px; gap: 8px; background: var(--soft); border-color: var(--hair-soft); }
-.card.busy .line { padding-block: 6px; }
+.card { background: var(--canvas); border: 1px solid var(--hair); border-radius: var(--r-md); padding: 16px 20px; display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 8px 24px; align-items: center; }
+.card.busy { background: var(--soft); border-color: var(--hair-soft); }
 .card.busy .name { font-weight: 500; }
-.filters button { min-height: 40px; }
-.filters button span { color: inherit; opacity: .6; margin-left: 4px; }
-.card-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
-.card-h .name { font-weight: 600; font-size: 17px; }
-.card-h .meta { color: var(--muted); font-size: 14px; }
-.wait { font-size: 14px; color: var(--muted); margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 720px) { .card { grid-template-columns: minmax(0, 1fr); } }
+.who { display: grid; gap: 2px; align-content: start; min-width: 0; }
+.who .name { font-weight: 600; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.who .meta { color: var(--muted); font-size: 13px; }
+.wait { font-size: 14px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; }
 .wait.warn { color: var(--warn); font-weight: 600; }
 .wait.crit { color: var(--crit); font-weight: 600; }
 .wait.warn::before, .wait.crit::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.note { font-size: 14px; color: var(--muted); }
-.lines { display: grid; }
-.line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; padding-block: 12px; border-top: 1px solid var(--hair-soft); }
-.line:first-child { border-top: 0; padding-top: 0; }
-.line:last-child { padding-bottom: 0; }
-.line.locked .what { opacity: .55; }
-.line .what { display: grid; gap: 2px; min-width: 0; }
-.line .top-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.note { font-size: 13px; color: var(--muted); }
+.lines { display: grid; min-width: 0; }
+.line { display: grid; grid-template-columns: 170px minmax(0, 1fr) auto; gap: 16px; align-items: center; min-height: 56px; padding-block: 6px; border-top: 1px solid var(--hair-soft); }
+.line:first-child { border-top: 0; }
+@media (max-width: 1180px) { .line { grid-template-columns: minmax(0, 1fr) auto; } .line .svcname { grid-column: 1 / -1; } }
+.line.is-done { min-height: 32px; padding-block: 2px; }
+.line.is-done .grp { font-size: 14px; font-weight: 500; }
+.card.busy { padding-block: 10px; }
+.line.locked .svcname, .line.locked .what, .line.is-done .svcname, .line.is-done .what { opacity: .5; }
+.svcname { display: grid; gap: 2px; min-width: 0; }
 .g-enh { --g: var(--enh); } .g-pedi { --g: var(--pedi); }
-.grp { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 500; }
-.grp i { width: 8px; height: 8px; border-radius: 50%; background: var(--g); }
-.svc { font-weight: 500; }
-.req { font-size: 14px; color: var(--accent); font-weight: 600; }
+.grp { display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.grp i { width: 10px; height: 10px; border-radius: 3px; background: var(--g); flex: none; }
+.req { font-size: 13px; color: var(--accent); font-weight: 600; padding-left: 18px; }
+.what { min-width: 0; }
 .status { color: var(--muted); font-size: 14px; }
 .status strong { color: var(--ink); font-weight: 600; }
 .acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
@@ -452,7 +452,7 @@ function matchQ(v) {
 }
 function lineHTML(v, l, sug) {
   const g = GROUPS[l.group];
-  const rq = l.reqTech ? `<span class="req">Requests ${esc(tech(l.reqTech).name)}</span>` : "";
+  const rq = l.reqTech ? `<span class="req">Request: ${esc(tech(l.reqTech).name)}</span>` : "";
   let status = "", acts = "";
   if (l.status === "done") {
     status = `<span class="status">✓ Done by <strong>${esc(l.tech ? tech(l.tech).name : "—")}</strong></span>`;
@@ -480,8 +480,9 @@ function lineHTML(v, l, sug) {
     status = `<span class="status">${free ? "Free techs are reserved for earlier customers" : "No " + esc(g.label.toLowerCase()) + " tech free yet"}</span>`;
     acts = `<button class="btn small" data-act="open-override" data-line="${l.id}">Pick tech</button>`;
   }
-  return `<div class="line g-${l.group} ${isLocked(v, l) ? "locked" : ""}">
-    <div class="what"><div class="top-row"><span class="grp"><i></i>${g.label}</span><span class="svc">${esc(l.service)}</span>${rq}</div>${status}</div>
+  return `<div class="line g-${l.group} ${isLocked(v, l) ? "locked" : ""} ${l.status === "done" ? "is-done" : ""}">
+    <div class="svcname"><span class="grp"><i></i>${g.label}</span>${rq}</div>
+    <div class="what">${status}</div>
     <div class="acts">${acts}</div></div>`;
 }
 function cardHTML(v, sug) {
@@ -490,8 +491,9 @@ function cardHTML(v, sug) {
   const m = wl ? mins(waitedSince(v, wl)) : 0;
   const between = v.lines.some(l => l.status === "done");
   return `<article class="card ${waiting ? "" : "busy"}">
-    <div class="card-h"><span class="name">${esc(v.name)}</span><span class="meta num">in ${fmt(v.checkinAt)} · …${esc(v.phone.slice(-4))}</span>
-    ${waiting && between ? `<span class="note">Part 2</span>` : ""}${waiting ? waitPill(m) : `<span class="wait">In service</span>`}</div>
+    <div class="who"><span class="name">${esc(v.name)}</span>
+      <span class="meta num">${fmt(v.checkinAt)} · …${esc(v.phone.slice(-4))}</span>
+      ${waiting ? waitPill(m) : `<span class="wait">In service</span>`}${waiting && between ? `<span class="note">Part 2</span>` : ""}</div>
     <div class="lines">${v.lines.map(l => lineHTML(v, l, sug)).join("")}</div></article>`;
 }
 const reqLines = v => v.lines.filter(l => l.reqTech && l.status !== "done");
@@ -584,7 +586,7 @@ function renderModal() {
   if (S.ui.call) {
     const c = S.ui.call;
     return modal(`<div class="call g-${c.group}"><div class="k"><i></i>Call on radio · ${GROUPS[c.group].label}</div><div class="big">${esc(c.tech)}</div>
-      <div class="detail">${esc(c.service)} for ${esc(c.customer)}${c.req ? " (request)" : ""}</div></div>
+      <div class="detail">${GROUPS[c.group].label} for ${esc(c.customer)}${c.req ? " (request)" : ""}</div></div>
       <button class="btn primary" data-act="close" autofocus>Called</button>`, "");
   }
   if (!m) { document.getElementById("overlay").innerHTML = ""; return; }
@@ -619,7 +621,7 @@ function renderModal() {
   if (m.type === "override") {
     const [v, l] = lineOf(m.lineId);
     const opts = onDuty(l.group).filter(t => t.status === "available");
-    return modal(`<h3>Pick a technician</h3><p class="sub">${esc(v.name)} · ${GROUPS[l.group].label}: ${esc(l.service)}. Picking out of order is noted in Activity.</p>
+    return modal(`<h3>Pick a technician</h3><p class="sub">${esc(v.name)} · ${GROUPS[l.group].label}. Picking out of order is noted in Activity.</p>
       <div class="list g-${l.group}">${opts.length ? opts.map((t, i) => `<button class="opt" data-act="assign" data-override="1" data-line="${l.id}" data-tech="${t.id}"><span><strong>${esc(t.name)}</strong> <span class="status">· ${i === 0 ? "first in line" : "#" + (i + 1) + " in line"}${waitingReqFor(t.id).length ? " · has a request waiting" : ""}</span></span><span class="num">${t.turns} turns</span></button>`).join("") : `<div class="empty">No free ${esc(GROUPS[l.group].label.toLowerCase())} technician right now.</div>`}</div>
       <button class="btn ghost" data-act="close">Cancel</button>`);
   }
