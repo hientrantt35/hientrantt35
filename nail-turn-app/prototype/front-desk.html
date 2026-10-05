@@ -118,6 +118,8 @@ button.count:hover { text-decoration-color: var(--ink); }
 .grp i { width: 10px; height: 10px; border-radius: 3px; background: var(--g); flex: none; }
 .req { font-size: 13px; color: var(--accent); font-weight: 600; padding-left: 18px; }
 .what { min-width: 0; }
+.status.called.warn, .status.called.warn strong { color: var(--warn); }
+.status.called.crit, .status.called.crit strong { color: var(--crit); font-weight: 600; }
 .status { color: var(--muted); font-size: 14px; }
 .status strong { color: var(--ink); font-weight: 600; }
 .acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
@@ -331,13 +333,16 @@ function seed() {
   const between = mkVisit(48, [{ group: "pedi", status: "done", tech: freePedi[0].id, startedAt: N - 44 * MIN, doneAt: N - 3 * MIN }, { group: "enh" }]);
   between.lines[0].service = "Deluxe spa pedicure"; between.lines[1].service = "Gel-X tips";
   mkVisit(1, [{ group: "enh", service: "Hard gel fill" }]);
+  // Two technicians were called on the radio but have not shown up yet (10-minute rule).
+  const called = visits.filter(v => v.lines.length === 1 && v.lines[0].status === "in");
+  [[called[2], 12], [called[5], 6]].forEach(([v, ago]) => { if (v) { const l = v.lines[0]; l.arrived = false; l.calledAt = N - ago * MIN; l.startedAt = l.calledAt; v.checkinAt = Math.min(v.checkinAt, l.calledAt - 4 * MIN); } });
   const done = [];
   for (let i = 0; i < 118; i++) done.push({ id: nid("d"), name: pick(CUST), at: N - (20 + i * 2) * MIN, groups: [pick(GKEYS)] });
   return { techs, visits, done, log: [{ t: N - 300 * MIN, text: "Day started. Turn counts reset to 0." }], ui: { tab: "pedi", q: "", modal: null, banner: null, call: null } };
 }
 
-function load() { try { const raw = localStorage.getItem("turn-desk-v2"); if (raw) { const s = JSON.parse(raw); uid = s._uid || 1000; return s; } } catch (e) {} return seed(); }
-function save() { try { S._uid = uid; localStorage.setItem("turn-desk-v2", JSON.stringify(S)); } catch (e) {} }
+function load() { try { const raw = localStorage.getItem("turn-desk-v3"); if (raw) { const s = JSON.parse(raw); uid = s._uid || 1000; return s; } } catch (e) {} return seed(); }
+function save() { try { S._uid = uid; localStorage.setItem("turn-desk-v3", JSON.stringify(S)); } catch (e) {} }
 
 const tech = id => S.techs.find(t => t.id === id);
 const lineOf = id => { for (const v of S.visits) for (const l of v.lines) if (l.id === id) return [v, l]; return [null, null]; };
@@ -387,11 +392,29 @@ function assign(lineId, techId, how) {
   if (t.status !== "available") { toast(`${t.name} is no longer free. Pick the next technician.`); render(); return; }
   if (isLocked(v, l)) { toast(`${v.name} is still in another service.`); return; }
   const isReq = l.reqTech === t.id;
-  l.status = "in"; l.tech = t.id; l.startedAt = now();
+  l.status = "in"; l.tech = t.id; l.startedAt = now(); l.calledAt = now(); l.arrived = false;
   t.status = "busy";
   if (isReq) t.reqs++; else t.turns++;
   addLog(`${t.name} → ${v.name} (${GROUPS[l.group].label}: ${l.service}). ${isReq ? "Request, no turn." : "+1 turn (now " + t.turns + ")."}${how === "override" ? " Picked manually by manager." : ""}`);
   S.ui.call = { tech: t.name, group: l.group, customer: v.name, service: l.service, req: isReq };
+  save(); render();
+}
+const NO_SHOW_MIN = 10;
+function arrived(lineId) {
+  const [v, l] = lineOf(lineId); const t = tech(l.tech);
+  l.arrived = true; l.startedAt = now();
+  addLog(`${t.name} arrived for ${v.name} after ${mins(l.calledAt)} min.`);
+  save(); render();
+}
+function noShow(lineId) {
+  const [v, l] = lineOf(lineId); const t = tech(l.tech);
+  if (mins(l.calledAt) < NO_SHOW_MIN) return;
+  const wasReq = l.reqTech === t.id;
+  t.status = "available"; t.freeSince = now();
+  l.status = "waiting"; l.tech = null; l.startedAt = null; l.calledAt = null; l.arrived = undefined;
+  if (wasReq) { t.reqs = Math.max(0, t.reqs - 1); l.reqTech = null; }
+  addLog(`No show: ${t.name} did not come within ${NO_SHOW_MIN} min for ${v.name}. ${wasReq ? "Request cancelled; customer moved to anyone." : t.name + " loses the turn (stays at " + t.turns + " turns)."} ${v.name} goes back to the front of the line.`);
+  toast(`${t.name} loses the turn. Assign ${v.name} to the next technician.`);
   save(); render();
 }
 function finish(lineId) {
@@ -458,8 +481,15 @@ function lineHTML(v, l, sug) {
     status = `<span class="status">✓ Done by <strong>${esc(l.tech ? tech(l.tech).name : "—")}</strong></span>`;
   } else if (l.status === "in") {
     const t = tech(l.tech);
-    status = `<span class="status"><strong>${esc(t.name)}</strong> · <span class="num">${mins(l.startedAt)} min</span></span>`;
-    acts = `<button class="btn done" data-act="finish" data-line="${l.id}">Done</button>`;
+    if (l.calledAt && l.arrived === false) {
+      const c = mins(l.calledAt), left = NO_SHOW_MIN - c;
+      status = `<span class="status called ${c >= NO_SHOW_MIN ? "crit" : c >= 5 ? "warn" : ""}">Called <strong>${esc(t.name)}</strong> · <span class="num">${c} min ago</span>${left > 0 ? ` · can reassign in ${left} min` : " · not here"}</span>`;
+      acts = (c >= NO_SHOW_MIN ? `<button class="btn assign" data-act="noshow" data-line="${l.id}">Reassign</button>` : "") +
+        `<button class="btn ${c >= NO_SHOW_MIN ? "small" : "done"}" data-act="arrived" data-line="${l.id}">${esc(t.name)} is here</button>`;
+    } else {
+      status = `<span class="status"><strong>${esc(t.name)}</strong> · <span class="num">${mins(l.startedAt)} min</span></span>`;
+      acts = `<button class="btn done" data-act="finish" data-line="${l.id}">Done</button>`;
+    }
   } else if (isLocked(v, l)) {
     const cur = v.lines.find(x => x.status === "in");
     status = `<span class="status">After ${esc(GROUPS[cur.group].label.toLowerCase())} is done</span>`;
@@ -493,7 +523,7 @@ function cardHTML(v, sug) {
   return `<article class="card ${waiting ? "" : "busy"}">
     <div class="who"><span class="name">${esc(v.name)}</span>
       <span class="meta num">${fmt(v.checkinAt)} · …${esc(v.phone.slice(-4))}</span>
-      ${waiting ? waitPill(m) : `<span class="wait">In service</span>`}${waiting && between ? `<span class="note">Part 2</span>` : ""}</div>
+      ${waiting ? waitPill(m) : v.lines.some(l => l.status === "in" && l.calledAt && l.arrived === false) ? `<span class="wait warn">Tech called</span>` : `<span class="wait">In service</span>`}${waiting && between ? `<span class="note">Part 2</span>` : ""}</div>
     <div class="lines">${v.lines.map(l => lineHTML(v, l, sug)).join("")}</div></article>`;
 }
 const reqLines = v => v.lines.filter(l => l.reqTech && l.status !== "done");
@@ -675,6 +705,8 @@ document.addEventListener("click", e => {
   if (a === "close") { closeModal(); render(); return; }
   if (a === "assign") { S.ui.modal = null; assign(el.dataset.line, el.dataset.tech, el.dataset.override ? "override" : "suggested"); return; }
   if (a === "finish") { finish(el.dataset.line); return; }
+  if (a === "arrived") { arrived(el.dataset.line); return; }
+  if (a === "noshow") { noShow(el.dataset.line); return; }
   if (a === "to-anyone") { const [v, l] = lineOf(el.dataset.line); addLog(`${v.name} switched from ${tech(l.reqTech).name} to anyone.`); l.reqTech = null; save(); render(); return; }
   if (a === "open-override") { S.ui.modal = { type: "override", lineId: el.dataset.line }; render(); return; }
   if (a === "filter") { S.ui.filter = el.dataset.f; save(); render(); return; }

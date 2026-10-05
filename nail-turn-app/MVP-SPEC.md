@@ -21,6 +21,7 @@
 | M12 | Monitor cho thợ | **Chung máy lễ tân** — thợ bấm trực tiếp trên máy gán thợ | Máy quầy có **thanh hàng chờ thợ** luôn hiện; thợ chạm tên → **bảng PIN nổi lên** → xong tự đóng, **không làm mất màn hình lễ tân đang dùng**. Sau pilot cân nhắc thêm 1 tablet riêng cho thợ |
 | M13 | Báo cáo cuối ngày | **Turn mỗi thợ** (walk-in + request), **lịch sử chỉnh sửa**, **tổng khách & thời gian chờ**, + một mục khác (đang hỏi lại) | Trang báo cáo theo ngày; số liệu thời gian chờ dùng luôn cho case study |
 | M14 | Có tách danh sách *Waiting* / *In service* không | **Không tách** (góp ý của bạn): tách ra làm khó thấy nhanh khách nào đang request ai | **Một danh sách theo giờ check-in** (giống POS, lễ tân đã quen). Khách đang làm hiện gọn & nhạt hơn, khách chờ nổi bật (thời gian chờ + nút Assign). Bộ lọc **All / Waiting / Requests**; *Requests* **gom theo thợ được request** (vd. "Linh · 2 waiting · busy now") |
+| M15 | Gọi bộ đàm mà thợ không tới | **Chờ 10 phút**; quá 10 phút thì chuyển khách, và thợ vắng **mất lượt** (turn đã cộng không được trả lại) | Sau khi Assign, dòng dịch vụ hiện *"Called Mai · X min ago"* + nút **"Mai is here"**. Phút 5 đổi cam, phút 10 đổi đỏ và hiện nút **Reassign** → khách quay lại đầu hàng, gợi ý thợ kế tiếp; ghi Activity. Khách request mà thợ không tới → huỷ request, chuyển sang "anyone" (*cần xác nhận*) |
 
 ## Tóm tắt luồng chính (để build)
 
