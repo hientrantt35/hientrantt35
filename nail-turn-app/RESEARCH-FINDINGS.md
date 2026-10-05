@@ -85,7 +85,7 @@
   - List hiện **sắp xếp theo giờ check-in** → khách cũ (đã xong) nằm trên, khách mới bị đẩy xuống dưới, càng về chiều càng phải cuộn nhiều.
 - **Hệ quả thiết kế:** Danh sách chính chỉ gồm khách đang hoạt động; trong nhóm "đang chờ" vẫn giữ thứ tự **giờ check-in** (quen với lễ tân, công bằng với khách).
 
-## P5. Với mỗi khách, cần thấy ngay: khách làm dịch vụ của nhóm nào, ai đang làm dịch vụ nào
+## P5. *(Yêu cầu giữ nguyên từ POS)* Với mỗi khách, cần thấy ngay: khách làm dịch vụ của nhóm nào, ai đang làm dịch vụ nào
 
 - **Nhu cầu (từ quan sát):** Với từng khách, thông tin **quan trọng nhất** là: khách làm **những dịch vụ nào**, thuộc **nhóm thợ nào**, và **thợ nào đang làm phần nào**.
 - **Ai cần:** Lễ tân (gán thợ, gọi thợ, trả lời khách, tính tiền), manager (xử lý sự cố, khiếu nại), thợ phần 2 (biết khách đang ở đâu — liên quan P2).
@@ -96,4 +96,7 @@
   - Màu nhóm dùng **thống nhất** trên màn hình lễ tân, monitor, kiosk, báo cáo.
   - Tra ngược theo thợ: chạm vào tên thợ → thấy thợ đang làm cho khách nào, dịch vụ gì.
 - **Ảnh hưởng tới kế hoạch:** Thẻ khách là **thành phần giao diện trung tâm** của màn hình lễ tân; cần làm prototype & test sớm.
-- **Cần hỏi thêm:** POS hiện tại có hiển thị thông tin này không, hay phải mở từng phiếu? Thông tin này hay được dùng nhất vào lúc nào (gọi thợ, khách hỏi, tính tiền)?
+- **Đã xác nhận thêm:**
+  - POS hiện tại **có hiển thị** thông tin này → P5 **không phải điểm đau** mà là **yêu cầu bắt buộc phải giữ** (parity): app mới không được làm kém hơn POS ở điểm này.
+  - Thông tin được dùng nhiều nhất vào 2 lúc: **(1) khi chia dịch vụ cho thợ**, **(2) khi muốn xem khách đang làm với thợ nào**.
+- **Hệ quả thiết kế:** Thẻ khách phải hiện đủ thông tin **ngay trong danh sách** (không phải mở phiếu); thao tác "Assign" nằm ngay trên dòng dịch vụ của thẻ; tra ngược theo tên thợ phải nhanh (≤ 1 chạm hoặc ô tìm kiếm).
