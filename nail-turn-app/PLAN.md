@@ -64,6 +64,7 @@
    - Danh sách khách đang chờ; mỗi khách hiện **thợ được gợi ý** của nhóm tương ứng.
    - Bấm **"Assign"** → hiện to *"Call: Linh — Pedicure"* để đọc qua bộ đàm.
    - Nút **Done** khi thợ làm xong; đổi trạng thái thợ (break/back).
+   - Khách làm nhiều nhóm (vd. chân + tay): **một thẻ khách hiện tiến độ từng phần** và thợ của từng phần *(P2)*.
    - Mỗi thợ hiện **số khách request đang chờ** — trả lời khách ngay, không phải đếm tay *(P1)*.
    - Tra nhanh **SĐT thợ** (bấm gọi / gửi SMS từ máy).
    - Chống xung đột: nếu máy kia vừa gán thợ đó, máy này báo ngay và gợi ý người kế tiếp.
@@ -83,8 +84,9 @@ Salon
  │      │      └──< Shift (check-in, check-out, status: available / busy / break / off)
  │      └──< Service (tên, group)
  ├──< Customer (tên, SĐT)               ← từ kiosk
- ├──< Visit (1 lượt khách: customer, dịch vụ, thợ request?, trạng thái: waiting / in_service / done)
- │      └──< Assignment (thợ, dịch vụ, is_request, assigned_by, bắt đầu, xong)
+ ├──< Visit (1 lượt khách: customer, trạng thái tổng: waiting / in_service / done)
+ │      └──< ServiceLine (dịch vụ, group, thợ request?, trạng thái riêng)   ← 1 khách có thể có nhiều phần ở nhiều nhóm (P2)
+ │             └── Assignment (thợ, is_request, assigned_by, bắt đầu, xong)
  └──< TurnEvent (log bất biến: +1 turn, request, adjust, skip — lý do, người thao tác, thời điểm)
 ```
 
