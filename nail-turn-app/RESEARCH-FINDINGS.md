@@ -61,4 +61,8 @@
   - Vẫn cho thợ tự đổi trạng thái trên monitor (nghỉ, quay lại) bằng 1 chạm vào tên mình; mọi thay đổi ghi lịch sử.
   - Cảnh báo cho lễ tân nếu một thợ "bận" quá lâu bất thường (vd. lâu hơn thời lượng dịch vụ + 15 phút).
 - **Ảnh hưởng tới kế hoạch:** Trạng thái thợ dựa trên **phần dịch vụ**, không dựa trên thanh toán; monitor có thao tác đơn giản cho thợ.
-- **Cần hỏi thêm:** Bạn có thấy thợ quên đổi trạng thái và bị bỏ lượt không? Đổi trạng thái trên monitor có cần mã PIN/xác nhận gì không? Khách chỉ làm 1 dịch vụ thì thợ có cũng bị "kẹt bận" chờ thanh toán không?
+- **Đã xác nhận thêm:**
+  - **Có** trường hợp thợ quên đổi sang free và bị bỏ lượt — và **thợ phải tự chịu trách nhiệm**. Tức là lỗi do thiết kế hệ thống đang bị đẩy sang vai người dùng.
+  - Khách **chỉ làm 1 dịch vụ**: xong thì thợ **dẫn khách xuống tính tiền → turn kết thúc**. Trường hợp này phần việc xong và thanh toán xảy ra gần như cùng lúc, nên **không bị kẹt**. Vấn đề chỉ xảy ra với khách nhiều phần (P2).
+- **Insight cho case study:** Hệ thống bắt con người "nhớ" để bù cho một quy tắc sai (rảnh = đã thanh toán), rồi phạt họ khi quên. Thiết kế tốt nên làm cho việc quên **không thể xảy ra**, thay vì bắt người dùng chịu trách nhiệm.
+- **Cần hỏi thêm:** Đổi trạng thái trên monitor có cần mã PIN/xác nhận gì không?
