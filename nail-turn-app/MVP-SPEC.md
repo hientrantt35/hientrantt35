@@ -6,7 +6,7 @@
 
 | # | Câu hỏi | Trả lời | Cách build |
 |---|---|---|---|
-| M1 | Các nhóm thợ | **3 nhóm: Tay / Chân / Wax-Mi** | Seed 3 group, mỗi group 1 màu. Số thợ mỗi nhóm: tạm dùng dữ liệu giả (vd. Tay 25, Chân 20, Wax-Mi 5) |
+| M1 | Các nhóm thợ | ~~3 nhóm~~ → **sửa lại: 2 nhóm** (xác nhận sau):<br>• **Pedi & Mani** (nhóm chân): làm chân **và cả tay** nếu khách *không* gắn móng dài / acrylic / tips / hard gel.<br>• **Enhancements** (nhóm tay): **chỉ** làm tay có gắn móng (acrylic, tips, hard gel). | Nhóm được **suy ra từ dịch vụ**, không bắt khách chọn nhóm: Feet + Hands tự nhiên → Pedi & Mani; Hands có extension → Enhancements. Nhiều dịch vụ cùng nhóm gộp thành 1 phần (vd. "Pedicure + Gel manicure", 1 thợ, 1 turn — *cần xác nhận*). Tạm dùng 28 / 22 thợ |
 | M2 | Khách làm 2 nhóm: phần nào trước | **Nhóm nào có thợ rảnh trước** | Cả 2 phần vào hàng chờ của 2 nhóm cùng lúc; phần nào có thợ rảnh trước thì gợi ý gán trước. Khi 1 phần đang làm, phần kia **bị khoá** (khách không thể ở 2 chỗ) cho tới khi phần đầu xong |
 | M3 | Thợ rảnh, có cả khách request mình đang chờ và mình đang đứng đầu hàng walk-in | **Khách request trước** | Khi thợ rảnh: nếu có khách request thợ đó → gợi ý khách request (0 turn, thợ giữ vị trí). Walk-in chuyển cho người kế tiếp trong hàng |
 | M4 | Thợ check-in buổi sáng | **Tự bấm trên monitor** | Monitor có chế độ "Check in": chọn tên → nhập PIN |

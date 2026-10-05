@@ -17,7 +17,7 @@
   --accent: #d6345a;        /* polish red: Assign, the one hot action */
   --accent-press: #b81f45;
   --on-accent: #ffffff;
-  --hands: #7357d9; --feet: #0e8a8c; --wax: #d07a26;
+  --enh: #7357d9; --pedi: #0e8a8c;
   --ok: #138a43; --warn: #b26a00; --crit: #c13515;
   --float: rgba(0,0,0,.02) 0 0 0 1px, rgba(0,0,0,.04) 0 2px 6px 0, rgba(0,0,0,.1) 0 4px 8px 0;
   --scrim: rgba(0,0,0,.5);
@@ -28,7 +28,7 @@
   --canvas: #161616; --soft: #1f1f1f; --strong: #2a2a2a; --hair: #363636; --hair-soft: #2b2b2b;
   --ink: #f2f2f2; --body: #d6d6d6; --muted: #a3a3a3;
   --accent: #ff5577; --accent-press: #ff7590; --on-accent: #1a0a10;
-  --hands: #a18cf5; --feet: #3fc2c4; --wax: #f0a25a; --ok: #4fd18a; --warn: #f2b84b; --crit: #ff7a5c;
+  --enh: #a18cf5; --pedi: #3fc2c4; --ok: #4fd18a; --warn: #f2b84b; --crit: #ff7a5c;
   --float: rgba(255,255,255,.06) 0 0 0 1px, rgba(0,0,0,.5) 0 4px 12px 0; --scrim: rgba(0,0,0,.6);
   color-scheme: dark;
 } }
@@ -36,7 +36,7 @@
   --canvas: #161616; --soft: #1f1f1f; --strong: #2a2a2a; --hair: #363636; --hair-soft: #2b2b2b;
   --ink: #f2f2f2; --body: #d6d6d6; --muted: #a3a3a3;
   --accent: #ff5577; --accent-press: #ff7590; --on-accent: #1a0a10;
-  --hands: #a18cf5; --feet: #3fc2c4; --wax: #f0a25a; --ok: #4fd18a; --warn: #f2b84b; --crit: #ff7a5c;
+  --enh: #a18cf5; --pedi: #3fc2c4; --ok: #4fd18a; --warn: #f2b84b; --crit: #ff7a5c;
   --float: rgba(255,255,255,.06) 0 0 0 1px, rgba(0,0,0,.5) 0 4px 12px 0; --scrim: rgba(0,0,0,.6);
   color-scheme: dark;
 }
@@ -108,7 +108,7 @@ button.count:hover { text-decoration-color: var(--ink); }
 .line.locked .what { opacity: .55; }
 .line .what { display: grid; gap: 2px; min-width: 0; }
 .line .top-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
-.g-hands { --g: var(--hands); } .g-feet { --g: var(--feet); } .g-wax { --g: var(--wax); }
+.g-enh { --g: var(--enh); } .g-pedi { --g: var(--pedi); }
 .grp { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 500; }
 .grp i { width: 8px; height: 8px; border-radius: 50%; background: var(--g); }
 .svc { font-weight: 500; }
@@ -124,7 +124,7 @@ button.count:hover { text-decoration-color: var(--ink); }
 /* Turn line */
 .techs { background: var(--canvas); border: 1px solid var(--hair); border-radius: var(--r-md); overflow: hidden; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); box-shadow: var(--float); }
 @media (max-width: 1080px) { .techs { position: static; } }
-.nextup { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0 8px; border-bottom: 1px solid var(--hair); }
+.nextup { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0 8px; border-bottom: 1px solid var(--hair); }
 .nextup button { padding: 16px 8px 12px; text-align: center; border-bottom: 2px solid transparent; min-height: 72px; min-width: 0; color: var(--muted); }
 .nextup button[aria-selected="true"] { border-bottom-color: var(--ink); color: var(--ink); }
 .nextup .gname { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; white-space: nowrap; }
@@ -181,6 +181,9 @@ button.count:hover { text-decoration-color: var(--ink); }
 .err { color: var(--crit); text-align: center; min-height: 20px; margin: 0; font-size: 14px; }
 .opt { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 16px; border: 1px solid var(--hair); border-radius: var(--r-md); text-align: left; min-height: 64px; width: 100%; }
 .opt:hover { border-color: var(--ink); }
+.svcsec { display: grid; gap: 8px; }
+.svcsec > span { font-size: 14px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.svcsec > span i { width: 8px; height: 8px; border-radius: 50%; background: var(--g); }
 .gtoggle { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .gtoggle button { min-height: 76px; border-radius: var(--r-md); border: 1px solid var(--hair); padding: 12px; text-align: left; display: grid; gap: 4px; align-content: start; }
 .gtoggle button b { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
@@ -238,15 +241,20 @@ button.count:hover { text-decoration-color: var(--ink); }
 (() => {
 const MIN = 60000;
 const GROUPS = {
-  hands: { label: "Hands", services: ["Manicure", "Gel manicure", "Gel-X tips", "Acrylic full set", "Acrylic fill", "Dip powder", "Polish change"] },
-  feet:  { label: "Feet", services: ["Pedicure", "Gel pedicure", "Deluxe spa pedicure", "Callus treatment"] },
-  wax:   { label: "Wax & Lash", services: ["Eyebrow wax", "Lip wax", "Lash extensions", "Lash fill", "Brow tint"] }
+  pedi: { label: "Pedi & Mani", hint: "Pedicure and natural nails", services: ["Pedicure", "Gel pedicure", "Deluxe spa pedicure", "Manicure", "Gel manicure", "Dip powder", "Polish change"] },
+  enh:  { label: "Enhancements", hint: "Acrylic, tips, hard gel", services: ["Acrylic full set", "Acrylic fill", "Gel-X tips", "Hard gel full set", "Hard gel fill"] }
 };
+// Which team does each service go to. Natural nails go to the pedi team; anything with extensions goes to enhancements.
+const MENU = [
+  { title: "Feet", group: "pedi", services: ["Pedicure", "Gel pedicure", "Deluxe spa pedicure"] },
+  { title: "Hands · natural nails", group: "pedi", services: ["Manicure", "Gel manicure", "Dip powder", "Polish change"] },
+  { title: "Hands · extensions (acrylic, tips, hard gel)", group: "enh", services: ["Acrylic full set", "Acrylic fill", "Gel-X tips", "Hard gel full set", "Hard gel fill"] }
+];
+const groupOf = svc => MENU.find(c => c.services.includes(svc)).group;
 const GKEYS = Object.keys(GROUPS);
 const TECH_NAMES = {
-  hands: ["Linh","Tuấn","Kelly","Tina","Vy","Ngọc","Jenny","Amy","Trâm","Kim","Lan","Thu","Hằng","Phương","Nhi","Tâm","Long","Danny","Tony","Hương","Diễm","My","Thảo","Yến","Trang"],
-  feet:  ["Mai","Hạnh","Loan","Quyên","Cindy","Lily","Vicky","Hoa","Bảo","Khoa","Nga","Oanh","Phúc","Quế","Sương","Tiên","Uyên","Vân","Xuân","Hiếu"],
-  wax:   ["Tú","Jade","Ruby","Kiều","Đào"]
+  pedi: ["Mai","Hạnh","Loan","Quyên","Cindy","Lily","Vicky","Hoa","Bảo","Khoa","Nga","Oanh","Phúc","Quế","Sương","Tiên","Uyên","Vân","Xuân","Hiếu","Tú","Jade","Ruby","Kiều","Đào","Thảo","Yến","Trang"],
+  enh:  ["Linh","Tuấn","Kelly","Tina","Vy","Ngọc","Jenny","Amy","Trâm","Kim","Lan","Thu","Hằng","Phương","Nhi","Tâm","Long","Danny","Tony","Hương","Diễm","My"]
 };
 const CUST = ["Anna K.","Brianna L.","Chloe M.","Danielle R.","Emily S.","Fatima A.","Grace W.","Hannah P.","Isabel G.","Jasmine T.","Karen O.","Lauren B.","Maria C.","Nicole D.","Olivia F.","Priya N.","Rachel H.","Sophia V.","Tiffany J.","Vanessa Q.","Whitney E.","Yasmin Z.","Zoe I.","Ashley U.","Brittany Y.","Carmen X.","Diana K.","Erica L.","Gabriela M.","Jessica R.","Kayla S.","Lucia A.","Megan W.","Natalie P.","Paige G.","Rosa T.","Sarah O.","Taylor B.","Valerie C.","Alyssa D."];
 
@@ -263,7 +271,7 @@ function seed() {
   uid = 1;
   const N = now();
   const techs = [];
-  const onDutyCount = { hands: 20, feet: 16, wax: 4 };
+  const onDutyCount = { pedi: 23, enh: 18 };
   GKEYS.forEach(g => TECH_NAMES[g].forEach((name, i) => {
     const on = i < onDutyCount[g];
     techs.push({ id: nid("t"), name, group: g, phone: phone(), pin: "1234",
@@ -274,56 +282,57 @@ function seed() {
   const visits = [];
   const usedNames = new Set();
   const cname = () => { let n; do { n = pick(CUST); } while (usedNames.has(n) && usedNames.size < CUST.length); usedNames.add(n); return n; };
+  const PEDI_FEET = ["Pedicure", "Gel pedicure", "Deluxe spa pedicure"];
   const mkVisit = (checkinAgo, lines) => {
     const v = { id: nid("v"), name: cname(), phone: phone(), checkinAt: N - checkinAgo * MIN, lines: [], doneAt: null };
     lines.forEach(l => v.lines.push(Object.assign({ id: nid("l"), service: pick(GROUPS[l.group].services), reqTech: null, status: "waiting", tech: null, startedAt: null, doneAt: null }, l)));
     visits.push(v); return v;
   };
   const busy = (t, startedAgo) => { t.status = "busy"; return { tech: t.id, status: "in", startedAt: N - startedAgo * MIN }; };
-  // In service: hands 13, feet 11, wax 2
-  const inHands = techs.filter(t => t.group === "hands" && t.status === "available").slice(0, 13);
-  const inFeet = techs.filter(t => t.group === "feet" && t.status === "available").slice(0, 11);
-  const inWax = techs.filter(t => t.group === "wax" && t.status === "available").slice(0, 2);
-  inHands.forEach((t, i) => {
+  const inEnh = techs.filter(t => t.group === "enh" && t.status === "available").slice(0, 12);
+  const inPedi = techs.filter(t => t.group === "pedi" && t.status === "available").slice(0, 15);
+  const spare = () => techs.find(x => x.group === "pedi" && x.status === "available" && !inPedi.includes(x));
+  inEnh.forEach((t, i) => {
     const ago = 6 + (i * 5) % 40;
     if (i === 3 || i === 7) {
-      // Part 1 feet done, part 2 hands in service (P2)
-      const ft = inFeet[0] ? techs.find(x => x.group === "feet" && x.status === "available" && !inFeet.includes(x)) : null;
+      // Part 1 pedicure done, part 2 extensions in service (P2)
+      const ft = spare();
       mkVisit(ago + 50, [
-        { group: "feet", status: "done", tech: ft ? ft.id : null, startedAt: N - (ago + 45) * MIN, doneAt: N - (ago + 4) * MIN },
-        Object.assign({ group: "hands" }, busy(t, ago))
+        { group: "pedi", service: pick(PEDI_FEET), status: "done", tech: ft ? ft.id : null, startedAt: N - (ago + 45) * MIN, doneAt: N - (ago + 4) * MIN },
+        Object.assign({ group: "enh" }, busy(t, ago))
       ]);
     } else {
-      mkVisit(ago + 3 + (i % 4), [Object.assign({ group: "hands" }, busy(t, ago), i === 0 ? { reqTech: t.id } : {})]);
+      mkVisit(ago + 3 + (i % 4), [Object.assign({ group: "enh" }, busy(t, ago), i === 0 ? { reqTech: t.id } : {})]);
     }
   });
-  inFeet.forEach((t, i) => {
+  inPedi.forEach((t, i) => {
     const ago = 4 + (i * 7) % 38;
-    const lines = [Object.assign({ group: "feet" }, busy(t, ago))];
-    if (i < 3) lines.push({ group: "hands" }); // part 2 locked until feet done
+    const svc = i % 4 === 1 ? "Pedicure + Gel manicure" : i % 4 === 2 ? pick(["Manicure", "Gel manicure", "Dip powder"]) : pick(PEDI_FEET);
+    const lines = [Object.assign({ group: "pedi", service: svc }, busy(t, ago))];
+    if (i === 0 || i === 4 || i === 8) lines.push({ group: "enh", service: "Gel-X tips" }); // part 2 locked until pedicure is done
     mkVisit(ago + 2 + (i % 3), lines);
   });
-  inWax.forEach((t, i) => mkVisit(5 + i * 9, [Object.assign({ group: "wax" }, busy(t, 3 + i * 7))]));
   // Waiting
-  const linh = T("Linh"); // busy (first hands tech)
-  const freeFeet = techs.filter(t => t.group === "feet" && t.status === "available");
-  mkVisit(22, [{ group: "hands", reqTech: linh.id }]);
-  mkVisit(14, [{ group: "hands" }]);
-  mkVisit(9, [{ group: "feet" }]);
-  mkVisit(7, [{ group: "feet" }, { group: "hands" }]);
-  mkVisit(5, [{ group: "hands", reqTech: linh.id }]);
-  mkVisit(4, [{ group: "wax" }]);
-  mkVisit(3, [{ group: "feet", reqTech: freeFeet[2] ? freeFeet[2].id : null }]);
-  const between = mkVisit(48, [{ group: "feet", status: "done", tech: freeFeet[0].id, startedAt: N - 44 * MIN, doneAt: N - 3 * MIN }, { group: "hands" }]);
+  const linh = T("Linh"); // busy (first enhancements tech)
+  const freePedi = techs.filter(t => t.group === "pedi" && t.status === "available");
+  mkVisit(22, [{ group: "enh", service: "Acrylic full set", reqTech: linh.id }]);
+  mkVisit(14, [{ group: "enh", service: "Acrylic fill" }]);
+  mkVisit(9, [{ group: "pedi", service: "Deluxe spa pedicure" }]);
+  mkVisit(7, [{ group: "pedi", service: "Pedicure" }, { group: "enh", service: "Hard gel full set" }]);
+  mkVisit(6, [{ group: "pedi", service: "Pedicure + Gel manicure" }]);
+  mkVisit(5, [{ group: "enh", service: "Gel-X tips", reqTech: linh.id }]);
+  mkVisit(4, [{ group: "pedi", service: "Gel manicure" }]);
+  mkVisit(3, [{ group: "pedi", service: "Gel pedicure", reqTech: freePedi[2] ? freePedi[2].id : null }]);
+  const between = mkVisit(48, [{ group: "pedi", status: "done", tech: freePedi[0].id, startedAt: N - 44 * MIN, doneAt: N - 3 * MIN }, { group: "enh" }]);
   between.lines[0].service = "Deluxe spa pedicure"; between.lines[1].service = "Gel-X tips";
-  mkVisit(1, [{ group: "hands" }]);
+  mkVisit(1, [{ group: "enh", service: "Hard gel fill" }]);
   const done = [];
   for (let i = 0; i < 118; i++) done.push({ id: nid("d"), name: pick(CUST), at: N - (20 + i * 2) * MIN, groups: [pick(GKEYS)] });
-  return { techs, visits, done, log: [{ t: N - 300 * MIN, text: "Day started. Turn counts reset to 0." }], ui: { tab: "hands", q: "", modal: null, banner: null, call: null } };
+  return { techs, visits, done, log: [{ t: N - 300 * MIN, text: "Day started. Turn counts reset to 0." }], ui: { tab: "pedi", q: "", modal: null, banner: null, call: null } };
 }
 
-function load() { try { const raw = localStorage.getItem("turn-desk-v1"); if (raw) { const s = JSON.parse(raw); uid = s._uid || 1000; return s; } } catch (e) {} return seed(); }
-function save() { try { S._uid = uid; localStorage.setItem("turn-desk-v1", JSON.stringify(S)); } catch (e) {} }
+function load() { try { const raw = localStorage.getItem("turn-desk-v2"); if (raw) { const s = JSON.parse(raw); uid = s._uid || 1000; return s; } } catch (e) {} return seed(); }
+function save() { try { S._uid = uid; localStorage.setItem("turn-desk-v2", JSON.stringify(S)); } catch (e) {} }
 
 const tech = id => S.techs.find(t => t.id === id);
 const lineOf = id => { for (const v of S.visits) for (const l of v.lines) if (l.id === id) return [v, l]; return [null, null]; };
@@ -596,24 +605,25 @@ function renderModal() {
       <button class="btn ghost" data-act="close">Cancel</button>`);
   }
   if (m.type === "add") {
-    const blocks = m.groups.map(g => {
+    const teams = GKEYS.filter(g => m.services.some(x => groupOf(x) === g));
+    const menu = MENU.map(c => `<div class="svcsec g-${c.group}"><span><i></i>${esc(c.title)} → ${GROUPS[c.group].label}</span>
+      <div class="svcchips">${c.services.map(x => `<button type="button" aria-pressed="${m.services.includes(x)}" data-act="svc" data-s="${esc(x)}">${esc(x)}</button>`).join("")}</div></div>`).join("");
+    const blocks = teams.map(g => {
       const sel = m.sel[g] || {};
-      const techs = onDuty(g);
-      return `<div class="gblock g-${g}"><strong><i></i>${GROUPS[g].label}</strong>
-        <div class="svcchips">${GROUPS[g].services.map(s => `<button type="button" aria-pressed="${sel.service === s}" data-act="svc" data-g="${g}" data-s="${esc(s)}">${esc(s)}</button>`).join("")}</div>
+      return `<div class="gblock g-${g}"><strong><i></i>${GROUPS[g].label}: ${esc(m.services.filter(x => groupOf(x) === g).join(" + "))}</strong>
         <label for="rq-${g}">Request a technician (optional)
-        <select id="rq-${g}" data-act-change="req" data-g="${g}"><option value="">Anyone · fastest</option>${techs.map(t => {
+        <select id="rq-${g}" data-act-change="req" data-g="${g}"><option value="">Anyone · fastest</option>${onDuty(g).map(t => {
           const q = waitingReqFor(t.id).length;
           const st = t.status === "available" && !q ? "free now" : t.status === "busy" ? "busy" : t.status === "break" ? "on break" : "free";
           return `<option value="${t.id}" ${sel.reqTech === t.id ? "selected" : ""}>${esc(t.name)} — ${st}${q ? ` · ${q} waiting` : ""}</option>`;
         }).join("")}</select></label></div>`;
     }).join("");
     return modal(`<h3>New walk-in</h3>
-      <form id="addform" style="display:grid;gap:12px">
+      <form id="addform" style="display:grid;gap:20px">
       <div class="row"><label for="cn" style="flex:1 1 180px">Name<input id="cn" type="text" value="${esc(m.name)}" autocomplete="off" autofocus></label>
       <label for="cp" style="flex:1 1 160px">Phone<input id="cp" type="tel" value="${esc(m.phone)}" autocomplete="off"></label></div>
-      <div class="sec">Services · pick one or more groups</div>
-      <div class="gtoggle">${GKEYS.map(g => `<button type="button" class="g-${g}" aria-pressed="${m.groups.includes(g)}" data-act="gtoggle" data-g="${g}"><b><i></i>${GROUPS[g].label}</b><small>${GROUPS[g].services.slice(0, 2).join(", ")}…</small></button>`).join("")}</div>
+      <div class="sec">Services</div>
+      ${menu}
       ${blocks}
       <p class="err">${m.err || ""}</p>
       <div class="row"><button type="button" class="btn ghost" data-act="close">Cancel</button><button type="submit" class="btn primary">Add to waiting list</button></div></form>`);
@@ -669,9 +679,19 @@ document.addEventListener("click", e => {
   }
   if (a === "banner-set") { const t = tech(S.ui.banner.techId); adjust(t, Number(el.dataset.n), "Late check-in"); return; }
   if (a === "banner-keep") { addLog(`Manager kept ${tech(S.ui.banner.techId).name} at 0 turns after late check-in.`); S.ui.banner = null; save(); render(); return; }
-  if (a === "open-add") { S.ui.modal = { type: "add", name: "", phone: "", groups: [], sel: {} }; render(); return; }
-  if (a === "gtoggle") { readAddForm(); const g = el.dataset.g; m.groups = m.groups.includes(g) ? m.groups.filter(x => x !== g) : m.groups.concat(g); render(); return; }
-  if (a === "svc") { readAddForm(); const g = el.dataset.g; m.sel[g] = m.sel[g] || {}; m.sel[g].service = m.sel[g].service === el.dataset.s ? null : el.dataset.s; render(); return; }
+  if (a === "open-add") { S.ui.modal = { type: "add", name: "", phone: "", services: [], sel: {} }; render(); return; }
+  if (a === "svc") {
+    readAddForm(); const x = el.dataset.s; m.err = "";
+    if (m.services.includes(x)) m.services = m.services.filter(y => y !== x);
+    else {
+      // Natural nails and extensions don't go together: picking one replaces the other.
+      const cat = MENU.find(c => c.services.includes(x));
+      const hands = MENU.filter(c => c.title.startsWith("Hands"));
+      if (hands.includes(cat)) { const other = hands.find(c => c !== cat); m.services = m.services.filter(y => !other.services.includes(y)); }
+      m.services = m.services.concat(x);
+    }
+    render(); return;
+  }
   if (a === "open-done") { S.ui.modal = { type: "done" }; render(); return; }
   if (a === "open-log") { S.ui.modal = { type: "log" }; render(); return; }
   if (a === "copy") { const txt = el.dataset.text; try { navigator.clipboard.writeText(txt).then(() => toast("Phone number copied"), () => toast(txt)); } catch (err) { toast(txt); } return; }
@@ -679,9 +699,9 @@ document.addEventListener("click", e => {
     const used = new Set(activeVisits().map(v => v.name));
     const name = CUST.find(n => !used.has(n)) || pick(CUST);
     const r = Math.random();
-    const picks = r < .5 ? [{ group: "hands" }] : r < .75 ? [{ group: "feet" }] : r < .9 ? [{ group: "feet" }, { group: "hands" }] : [{ group: "wax" }];
+    const picks = r < .4 ? [{ group: "pedi" }] : r < .8 ? [{ group: "enh" }] : [{ group: "pedi", service: "Pedicure" }, { group: "enh" }];
     if (Math.random() < .25) { const t = pick(onDuty(picks[0].group)); if (t) picks[0].reqTech = t.id; }
-    picks.forEach(p => p.service = pick(GROUPS[p.group].services));
+    picks.forEach(p => { if (!p.service) p.service = pick(GROUPS[p.group].services); });
     addVisit(name, phone(), picks, "kiosk"); return;
   }
   if (a === "reset") { S = seed(); save(); render(); toast("Demo data reset."); return; }
@@ -695,8 +715,8 @@ document.addEventListener("submit", e => {
   e.preventDefault(); readAddForm();
   const m = S.ui.modal;
   if (!m.name.trim()) { m.err = "Add the customer's name."; render(); return; }
-  if (!m.groups.length) { m.err = "Pick at least one service group."; render(); return; }
-  const picks = m.groups.map(g => ({ group: g, service: (m.sel[g] || {}).service, reqTech: (m.sel[g] || {}).reqTech }));
+  if (!m.services.length) { m.err = "Pick at least one service."; render(); return; }
+  const picks = GKEYS.filter(g => m.services.some(x => groupOf(x) === g)).map(g => ({ group: g, service: m.services.filter(x => groupOf(x) === g).join(" + "), reqTech: (m.sel[g] || {}).reqTech }));
   S.ui.modal = null; addVisit(m.name.trim(), m.phone.trim() || "—", picks, "front desk");
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && (S.ui.modal || S.ui.call)) { closeModal(); render(); } });
